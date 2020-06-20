@@ -6,7 +6,7 @@ import os
 
 
 
-# from deep_predictor import deep_predictor
+from deep_predictor import deep_predictor
 from my_bot_key import botkey
 
 
@@ -51,9 +51,10 @@ def log_internal_info(logger):
 
 logger = __set_logger()
 
+
 # instantiate and init predictor backend
-# dp = deep_predictor()
-# dp.init_predictor()
+dp = deep_predictor()
+dp.init_predictor()
 
 
 
@@ -87,7 +88,7 @@ def __download_file_requests(url, local_full_path):
 @log_internal_info(logger)
 def __get_image(file_id, bot_key = botkey, download_path = "images/temp"):
     """uses telegrams ap to retrive image"""
-
+    
     # get file path on server
     file_path_api_str = "https://api.telegram.org/bot{0}/getFile?file_id={1}".format(bot_key, file_id)
     response = requests.get(file_path_api_str).json()
@@ -126,92 +127,28 @@ def help(update, context):
 
 
 
-
-
-
 @log_user_info(logger)
 def image_handler(update, context):
     try:    
         # get image from api
         file_id = update.message.photo[-1].file_id
-        image_path = __get_image(botkey, file_id)
+        image_path = __get_image(file_id)
         update.message.reply_text("I am predicting wait a sec")
 
         # make prediction using backend
-        image_class, labeled_image = dp.predict_image(image_path)
+        is_detection_ok, image_class, labeled_image = dp.predict_image(image_path)
 
-        # inform the user
-        update.message.reply_text("result: {0}".format(image_class))
-        if(image_class != "not-classified"):
-            context.bot.send_photo(chat_id=update.message.chat.id, photo=labeled_image)
+        if(is_detection_ok):
+            # inform the user
+            update.message.reply_text("result: {0}".format(image_class))
+            if(image_class != "not-classified"):
+                context.bot.send_photo(chat_id=update.message.chat.id, photo=labeled_image)
+        else:
+            update.message.reply_text("oops something went wrong")
 
     except Exception:
         logger.exception("image_handler caused problem")
         update.message.reply_text("oops something went wrong")
-
-
-"""
-def image_handler(update, context):
-    try:    
-        # get image
-        file_id = update.message.photo[-1].file_id
-        image_path = get_image(botkey, file_id)
-        update.message.reply_text("I am predicting wait a sec")
-
-        # make prediction
-        prediction_result = predict_image(image_path)
-        update.message.reply_text("result: {0}".format(prediction_result))
-
-
-    except Exception as e:
-        update.message.reply_text("oops something went wrong")
-"""
-
-"""
-predictions_main_folder = "images/predictions"
-
-def image_handler2(update, context):
-    try:    
-        # get image
-        file_id = update.message.photo[-1].file_id
-        temp_image_path = get_image(botkey, file_id)
-        update.message.reply_text("I am predicting wait a sec")
-
-        # make prediction
-        prediction_result = predict_image(temp_image_path)
-        
-        # labeled_image = prediction_result[][]
-
-        if(prediction_result):
-            image_class = prediction_result[0][0]
-        else:
-            image_class = "not-classified"
-
-
-        # prepare new image name for predictions directory
-        _ , temp_image_name = os.path.split(temp_image_path)
-        predicted_image_class_path = os.path.join(predictions_main_folder, image_class)
-        predicted_image_path = __create_unique_file_name(os.path.join(predicted_image_class_path, temp_image_name))
-
-        # create class file if not exists
-        __create_dir_if_not_exists(predicted_image_class_path)
-
-        # move image from temp to predictions
-        os.rename(temp_image_path, predicted_image_path)
-
-
-
-        # inform the user
-        update.message.reply_text("result: {0}".format(image_class))
-        if(image_class != "not-classified"):
-            context.bot.send_photo(chat_id=update.message.chat.id, photo=labeled_image)
-        
-
-    except Exception as e:
-        update.message.reply_text("oops something went wrong")
-"""
-
-
 
 
 
