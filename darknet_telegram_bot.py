@@ -12,7 +12,7 @@ from my_bot_key import botkey
 
 
 
-def __set_logger(logger_name = "telegram_logger", log_file = log_file):
+def __set_logger(logger_name = "telegram_logger", log_file = None):
     logger = logging.getLogger(logger_name)  
     if(not logger.handlers):
         logger.setLevel(20)
