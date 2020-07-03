@@ -1,4 +1,4 @@
-*.log,
+*.log
 *.weights
 *.h5
 *.hdf5

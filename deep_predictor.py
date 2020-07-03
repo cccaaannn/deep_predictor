@@ -2,22 +2,53 @@ import logging
 import shutil
 import os
 import cv2
+import numpy as np
+import json
 
+import keras
 import darknet
 
 
 
 class deep_predictor():
-    def __init__(self, predictions_main_folder = "images/predictions", darknet_files = "darknet_files", keras_files = "keras_files", logger_name = "deep_predictor_backend", log_file = None):
-        self.logger_name = logger_name
-        self.log_file = log_file
+    def __init__(self, cfg_path="cfg/options.cfg"):
+        
+        self.__set_options(cfg_path)
+        
         self.logger = self.__set_logger()
 
-        self.predictions_main_folder = predictions_main_folder 
-        self.darknet_files = darknet_files
-        self.keras_files = keras_files
+        self.is_darknet_inited = False
+        self.is_keras_inited = False
+        
 
-        self.is_inited = False
+    # class options
+    def __set_options(self, cfg_path):
+        try:
+            cfg = self.__read_json_file(cfg_path)
+            
+            # general options
+            self.predictions_main_folder = cfg["general"]["predictions_main_folder"] 
+            self.logger_name = cfg["general"]["logger_name"]
+            self.log_file = cfg["general"]["log_file"]
+            
+            # darknet options
+            self.darknet_files = cfg["darknet"]["darknet_files"]
+            self.predictions_temp_path = cfg["darknet"]["darknet_predictions_temp_path"]
+            self.darknet_predictions_main_folder = cfg["darknet"]["darknet_predictions_main_folder"] 
+            self.darknet_configPath = cfg["darknet"]["darknet_configPath"]
+            self.darknet_weightPath = cfg["darknet"]["darknet_weightPath"]
+            self.darknet_metaPath = cfg["darknet"]["darknet_metaPath"]
+
+            # keras options
+            self.keras_files = cfg["keras"]["keras_files"]
+            self.keras_predictions_main_folder = cfg["keras"]["keras_predictions_main_folder"] 
+            self.keras_model_path = cfg["keras"]["keras_model_path"]
+            self.keras_names_path = cfg["keras"]["keras_names_path"]
+            self.keras_image_size = (int(cfg["keras"]["keras_image_w"]), int(cfg["keras"]["keras_image_h"]))
+            self.keras_grayscale = cfg["keras"]["keras_grayscale"]
+            self.keras_confidence_threshold = float(cfg["keras"]["keras_confidence_threshold"])
+        except:
+            raise Exception("configuration file is broken")
 
 
     def __set_logger(self):
@@ -43,6 +74,27 @@ class deep_predictor():
         return logger
 
 
+    # file folder operations 
+    def __read_from_file(self, file_name):
+        """read file"""
+        try:
+            with open(file_name,'r', encoding='utf-8') as file:
+                content = file.read()
+                return content
+        except (OSError, IOError) as e:
+            print(e)
+
+    def __read_json_file(self, cfg_path):
+        """read json file"""
+        with open(cfg_path,"r") as file:
+            d = json.load(file)
+        return d
+
+
+    def __create_dir_if_not_exists(self, path):
+        if(not os.path.exists(path)):
+            os.makedirs(path)
+
     def __create_unique_file_name(self, file_path, before_number="(", after_number=")"):
         """creates a unique image name for saving"""
         temp_file_path = file_path
@@ -62,15 +114,22 @@ class deep_predictor():
 
         return file_path
 
-    def __create_dir_if_not_exists(self, path):
-        if(not os.path.exists(path)):
-            os.makedirs(path)
-
-    def __move_image(self, temp_image_path, image_class):
+    
+    # image operations
+    def __move_image(self, temp_image_path, image_class, backend):
         """saves image by moving image from temp folder to its class folder by its name"""
+
+        if(backend == "darknet"):
+            predictions_main_folder = self.darknet_predictions_main_folder
+        elif(backend == "keras"):
+            predictions_main_folder = self.keras_predictions_main_folder
+        else:
+            predictions_main_folder = self.predictions_main_folder
+        
+
         # prepare new image name for predictions directory
         _ , temp_image_name = os.path.split(temp_image_path)
-        predicted_image_class_path = os.path.join(self.predictions_main_folder, image_class)
+        predicted_image_class_path = os.path.join(predictions_main_folder, image_class)
         predicted_image_path = self.__create_unique_file_name(os.path.join(predicted_image_class_path, temp_image_name))
 
         # create class file if not exists
@@ -80,57 +139,144 @@ class deep_predictor():
         os.rename(temp_image_path, predicted_image_path)
 
     def __convert_prediction_array_to_byte(self, temp_image_path, image):
-        """this method saves image array to convert it to bytes without saving is not working"""
+        """this method saves image array to convert it to bytes without saving it is not working"""
         _ , temp_image_name = os.path.split(temp_image_path)
-        temp_predicted_image_path = self.__create_unique_file_name(os.path.join(self.predictions_main_folder, "temp", temp_image_name))
+        temp_predicted_image_path = self.__create_unique_file_name(os.path.join(self.predictions_temp_path, temp_image_name))
         cv2.imwrite(temp_predicted_image_path, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
         byte_image = open(temp_predicted_image_path, "rb")
         os.remove(temp_predicted_image_path)
         return byte_image
 
+    def __load_image_keras(self, image_path):
+        """load, resize, reshape image for keras prediction"""
+        
+        img_width = self.keras_image_size[0]
+        img_height = self.keras_image_size[1]
+        
+        try:
+            if(self.keras_grayscale):
+                third_dimension = 1
+                img_array = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+            else:
+                third_dimension = 3
+                img_array = cv2.imread(image_path)
+
+            new_array = cv2.resize(img_array, (img_width, img_height))
+            new_array = new_array.reshape(-1, img_width, img_height, third_dimension)
+        except:
+            return None
+
+        return new_array
+
+
+
 
     def __init_darknet(self):
         self.logger.info("loading darknet network to ram")
-        darknet.performDetect(configPath = "{0}/yolov4.cfg".format(self.darknet_files), weightPath = "{0}/yolov4.weights".format(self.darknet_files), metaPath= "{0}/coco.data".format(self.darknet_files), initOnly=True)
+        try:
+            darknet.performDetect(configPath = self.darknet_configPath, weightPath = self.darknet_weightPath, metaPath= self.darknet_metaPath, initOnly=True)
+            return True
+        except:
+            self.logger.exception("could not load darknet model")
+            return False
+
 
     def __init_keras(self):
         self.logger.info("loading keras network to ram")
-        # TODO
-        # load keras model
-        pass
+        try:
+            # load labels
+            self.keras_names = self.__read_from_file(self.keras_names_path).split()
+
+            # load model
+            self.keras_model = keras.models.load_model(self.keras_model_path)
+
+            return True
+        except:
+            self.logger.exception("could not load keras model")
+            return False
+
 
     def init_predictor(self, darknet = True, keras = False):
         """initiates a backend for prediction"""
         if(darknet):
-            self.__init_darknet()
-            self.is_inited = True
+            if(self.__init_darknet()):
+                self.is_darknet_inited = True
         if(keras):
-            self.__init_keras()
-            self.is_inited = True
+            if(self.__init_keras()):
+                self.is_keras_inited = True
 
+
+
+    def predict_image_keras(self, image_path, save_image = ""):
+        if(self.is_keras_inited):
+
+            image = self.__load_image_keras(image_path)
+
+            if(not isinstance(image, np.ndarray)):
+                self.logger.error("image could not been loaded")
+                return False, None
+            
+            # prediction exception handling 
+            try:
+                # result = self.keras_model.predict_classes(image)
+                raw_prediction = self.keras_model.predict(image)
+                predicted_class = np.argmax(raw_prediction)
+                prediction_confidence = raw_prediction[0][predicted_class]
+                predicted_class_str = str(self.keras_names[predicted_class])
+            except:
+                self.logger.exception("model.predict raised exception")
+                return False, None
+
+            self.logger.info("predicted class: {0} confidence: {1}".format(predicted_class_str, prediction_confidence))
+            
+
+            # handle result for user
+            if(prediction_confidence > self.keras_confidence_threshold):    
+                image_class = predicted_class_str
+            else:
+                image_class = "not-classified"
+                
+            # save image by class
+            if(save_image == "save"):
+                self.__move_image(image_path, image_class, "keras")
+            elif(save_image == "remove"):
+                os.remove(image_path)
+            else:
+                pass
     
+            return True, image_class
 
-    def predict_image(self, image_path, save_image = True):
-        if(self.is_inited):
+        else:
+            self.logger.warning("first init the keras backend")
+            return False, None
+
+
+
+    def predict_image_darknet(self, image_path, save_image = ""):
+        if(self.is_darknet_inited):
             # performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yolov4.cfg", weightPath = "yolov4.weights", metaPath= "./cfg/coco.data", showImage= True, makeImageOnly = False, initOnly= False):
 
-            result = darknet.performDetect(imagePath=image_path, configPath = "{0}/yolov4.cfg".format(self.darknet_files), weightPath = "{0}/yolov4.weights".format(self.darknet_files), metaPath= "{0}/coco.data".format(self.darknet_files), showImage= True, makeImageOnly=True)
-            
-            detections_list = []
+            # prediction exception handling 
+            try:
+                result = darknet.performDetect(imagePath=image_path, configPath = self.darknet_configPath, weightPath = self.darknet_weightPath, metaPath= self.darknet_metaPath, showImage= True, makeImageOnly=True)
+            except:
+                self.logger.exception("performDetect raised exception")
+                return False, None, None
+
+
+            # handle result for user
             detections_str = "" 
             byte_image = None
-
             if(result and result["detections"]):    
                 for detection in result["detections"]:
-                    detections_list.append([detection[0],"{0:.2f}".format(detection[1])])
                     detections_str += "{0} - {1:.2f}\n".format(detection[0], detection[1])
 
-                print(result)
+                # print(result)
                 # TODO database
                 # assign image to first predicted classes folder
                 image_class = result["detections"][0][0]
 
-                # tempororly save image beacuse telegram does not like othervise -_-
+                # temporarily save image because telegram does not like othervise -_-
                 byte_image = self.__convert_prediction_array_to_byte(image_path, result["image"])
 
             else:
@@ -139,34 +285,16 @@ class deep_predictor():
                 
 
             # save image by class
-            if(save_image):
-                self.__move_image(image_path, image_class)
-            else:
+            if(save_image == "save"):
+                self.__move_image(image_path, image_class, "darknet")
+            elif(save_image == "remove"):
                 os.remove(image_path)
-            
+            else:
+                pass
 
 
             return True, detections_str, byte_image
         else:
-            self.logger.warning("first init the predictor with a backend")
-            return False, _, _
-
-
-"""
-dp = deep_predictor()
-dp.init_predictor()
-
-prediction, image = dp.predict_image("images/temp/dog.jpg")
-
-
-print(prediction)
-
-
-
-from matplotlib import pyplot as plt
-plt.imshow(image, interpolation='nearest')
-plt.show()
-"""
-
-
+            self.logger.warning("first init the darknet backend")
+            return False, None, None
 
