@@ -5,8 +5,6 @@ from logger_creator import logger_creator
 from helpers.file_folder_operations import file_folder_operations
 
 
-# id prediction_id prediction_status prediction image_path model_id prediction_time
-
 class database_handler():
     def __init__(self, database_cfg_path = "deep_predictor/cfg/database.cfg"):
         self.logger = logger_creator().database_handler_logger()
@@ -22,7 +20,7 @@ class database_handler():
             with sqlite3.connect(self.database_path) as _:
                 self.logger.info("db connected")
         except:
-            self.logger.critical(exc_info=True)
+            self.logger.critical("can not connect to database", exc_info=True)
 
 
     def create_prediction(self, prediction_id):
