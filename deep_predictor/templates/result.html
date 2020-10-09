@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div id="result_div">
+
+
+    </div>
+
+</body>
+</html>
+
+
+
+<script>
+
+    const prediction_id = '{{ prediction_id }}';
+
+
+    function fetch_api(){
+        fetch("/api?prediction_id=" + prediction_id)
+        .then((resp) => resp.json())
+        .then(function(data) {
+            if(data.prediction_status === 200){
+                console.log(data)
+                var jsonPretty = JSON.stringify(data,null,2); 
+                
+                var result_div = document.getElementById('result_div');
+                result_div.innerHTML = jsonPretty;
+
+                clearInterval(interval)
+                clearTimeout(timeout)
+                clearTimeout(timeout2)
+            }
+            else{
+                console.log(data)
+                var jsonPretty = JSON.stringify(data,null,2); 
+                
+                var result_div = document.getElementById('result_div');
+                result_div.innerHTML = "predicting" + jsonPretty;
+
+            }
+        })
+        .catch(function() {
+            console.log("error") 
+
+                var result_div = document.getElementById('result_div');
+                result_div.innerHTML = "error";
+
+        });
+
+
+    }
+
+
+
+    
+
+    let interval = setInterval(fetch_api, 1000);
+    
+
+    function timeout_function(){
+        clearInterval(interval)
+    }
+    
+    let timeout = setTimeout(timeout_function, 10000);
+
+
+
+    function timeout_function2(){
+        var result_div = document.getElementById('result_div');
+        result_div.innerHTML = "prediction failed";
+    }
+    
+    let timeout2 = setTimeout(timeout_function2, 11000);
+
+
+</script>
