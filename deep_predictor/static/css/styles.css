@@ -1,0 +1,37 @@
+a {
+    color: Black;
+}
+
+p {
+    color: white !important;
+}
+
+h1 {
+    color: white;
+}
+
+.center_div {
+    margin: 0 auto;
+    width:60%
+}
+
+.button {
+    background-color: #ff0055;
+    color: white;
+  }
+
+.jumbotron {
+    /* border-style:solid; */
+    background-color: #162a19 ;
+    background-image: linear-gradient(147deg,#162a19 10%,#3a7343 80%);
+}
+
+
+html, body {
+
+    min-height: 100%;
+    position:relative;
+      
+    background-color:#26da4d;
+    background-image: linear-gradient(147deg, #26da4d, #69a85d);
+}
