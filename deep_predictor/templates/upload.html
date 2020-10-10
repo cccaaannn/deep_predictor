@@ -1,15 +1,52 @@
-<!doctype html>
-<html>
-  <head>
-    <title>File Upload</title>
-  </head>
-  <body>
-    <h1>File Upload</h1>
+{% extends "layout.html" %}
+
+{% block body %}
+
+
+
+<div class="jumbotron jumbotron-fluid">
+
+
+  <div class="center_div">
+    <h1 class="display-4">Test Your Image</h1>
+    
     <form method="POST" action="" enctype="multipart/form-data">
-      <p><input type="file" name="file"></p>
-      <p><input type="text" name="prediction_id"></p>
-      <p><input type="text" name="model_id"></p>
-      <p><input type="submit" value="Submit"></p>
+      
+      <div class="custom-file">
+        <input type="file" name="file" class="custom-file-input" id="customFile" accept=".jpg,.jpeg,.png" >
+        <label class="custom-file-label" for="customFile">Choose file</label>
+      </div>
+
+      </br>
+
+      <p><input type="hidden" name="prediction_id" id="prediction_id"></p>
+      <p><input type="hidden" name="model_id" id="model_id"></p>
+      <p><input type="submit" value="Submit" class="btn btn-danger">
+      <a class="btn btn-danger float-right" href="/" role="button">Main page</a></p>
     </form>
-  </body>
-</html>
+  </div>
+
+</div>
+</br></br></br></br></br></br></br></br></br></br>
+</br></br></br>
+
+
+
+<script>
+	const id = generate_id(12)
+	document.getElementById("prediction_id").value = id;
+	console.log("prediction_id: " + id);
+
+	document.getElementById("model_id").value = 1;	
+</script>
+
+
+<script>
+	$(".custom-file-input").on("change", function() {
+	var fileName = $(this).val().split("\\").pop();
+	$(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+	});
+</script>
+
+
+{% endblock body %}
