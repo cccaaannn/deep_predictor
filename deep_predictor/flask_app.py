@@ -81,9 +81,13 @@ def upload_files():
         prediction_id = request.form['prediction_id']
 
 
+        # check form elements
         if(filename == "" or model_id == "" or prediction_id == ""):
             return render_template("upload.html")
-        
+
+        # check model id
+        if(not (model_id == "1" or model_id == "2")):
+            return render_template("upload.html")
 
         # prevet collision
         if(db.is_prediction_exists(prediction_id)):
