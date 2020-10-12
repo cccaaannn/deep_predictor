@@ -10,7 +10,7 @@
   <div class="center_div">
     <h1 class="display-4">Test Your Image</h1>
     
-    <form method="POST" action="" enctype="multipart/form-data">
+    <form method="POST" action="" enctype="multipart/form-data" id="image-form">
       
       <div class="custom-file">
         <input type="file" name="file" class="custom-file-input" id="customFile" accept=".jpg,.jpeg,.png" >
@@ -37,7 +37,24 @@
 	document.getElementById("prediction_id").value = id;
 	console.log("prediction_id: " + id);
 
-	document.getElementById("model_id").value = 1;	
+  document.getElementById("model_id").value = 1;
+  
+
+
+
+  // const form = document.querySelector("#image-form");
+  // const image_holder = document.querySelector("#customFile");
+
+  // form.addEventListener("submit", add_image);
+
+  // function add_image(e){
+
+  //   sessionStorage.setItem("aaaaa", image_holder.value)
+  //   console.log(image_holder.value);
+  //   // e.preventDefault();
+  // }
+
+
 </script>
 
 
