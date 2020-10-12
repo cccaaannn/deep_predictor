@@ -1,6 +1,8 @@
 import sqlite3
+import json
 import time
 import os
+
 from logger_creator import logger_creator
 from helpers.file_folder_operations import file_folder_operations
 
@@ -100,7 +102,7 @@ class database_handler():
                 return 0
 
 
-    def get_prediction(self, prediction_id):
+    def get_prediction_json(self, prediction_id):
         with sqlite3.connect(self.database_path) as connection:
             self.logger.info("function: {0} param: {1}".format("get_prediction", prediction_id))
             
@@ -112,9 +114,13 @@ class database_handler():
 
             if(len(prediction) > 0):
                 if(prediction[0][2] == 200):
+
+                    # database can save single quotes but json function needs double quoutes so we have this sad line
+                    predictions_json = json.loads(str(prediction[0][3]).replace("'","\""))
+
                     return {"prediction_id" : prediction[0][1], 
                             "prediction_status" : prediction[0][2], 
-                            "prediction" : prediction[0][3], 
+                            "predictions" : predictions_json["predictions"],
                             "model_id" : prediction[0][5], 
                             "prediction_time" : prediction[0][6]
                             }
