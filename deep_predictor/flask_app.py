@@ -3,12 +3,12 @@ from werkzeug.utils import secure_filename
 import sys
 import os
 
-# import tensorflow as tf
+
 
 # cfg paths
 flask_cfg_path = "deep_predictor/cfg/flask.cfg"
 database_handler_cfg_path = "deep_predictor/cfg/database.cfg"
-deep_predctor_cfg_path = "deep_predictor/cfg/other/mnist_options.cfg"
+deep_predctor_cfg_path = "deep_predictor/cfg/deep_predictor.cfg"
 
 
 from helpers.file_folder_operations import file_folder_operations
@@ -29,17 +29,19 @@ db = database_handler(database_handler_cfg_path)
 
 
 
-# from deep_predictor import deep_predictor
-# predictor = deep_predictor(deep_predctor_cfg_path)
-# predictor.init_predictor(darknet = False, keras = True)
+from deep_predictor import deep_predictor
+predictor = deep_predictor(deep_predctor_cfg_path)
+predictor.init_predictor(darknet = False, keras = True)
+
+# import tensorflow as tf
 # tf_graph = tf.get_default_graph()
 
 
 # dummy predictor for testing without keras or tf
-from predictor_dummy import predictor
-predictor = predictor()
-predictor.init()
-tf_graph = None
+# from predictor_dummy import predictor
+# predictor = predictor()
+# predictor.init()
+
 
 
 
@@ -116,7 +118,7 @@ def upload_files():
             abort(400)
 
         # start prediction on thread
-        pred_thread = prediction_thread(database_handler_cfg_path, unique_full_filename, prediction_id, int(model_id), predictor, tf_graph, is_dummy=True)
+        pred_thread = prediction_thread(database_handler_cfg_path, unique_full_filename, prediction_id, int(model_id), predictor, tf_version="2", is_dummy=False)
         pred_thread.start()
 
         return render_template("result.html", prediction_id=prediction_id)
@@ -136,7 +138,7 @@ def api():
     prediction = cfg["flask_options"]["dafault_api_response"]
 
     if(prediction_id):
-        prediction = db.get_prediction(prediction_id)
+        prediction = db.get_prediction_json(prediction_id)
 
         return prediction
     else:
