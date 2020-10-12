@@ -2,7 +2,7 @@ from deep_predictor import deep_predictor
 
 
 
-dp = deep_predictor(cfg_path="deep_predictor/cfg/mnist_options.cfg")
+dp = deep_predictor()
 
 dp.init_predictor(darknet=False, keras=True)
 # is_predicted, prediction = dp.predict_image_keras("deep_predictor/images/test_images/other/0.jpg")
@@ -16,7 +16,7 @@ dp.init_predictor(darknet=False, keras=True)
 # is_predicted, prediction = dp.predict_image_keras("deep_predictor/images/test_images/other/8.jpg")
 # is_predicted, prediction = dp.predict_image_keras("deep_predictor/images/test_images/other/9.jpg")
 
-# is_predicted, prediction = dp.predict_image_keras("deep_predictor/images/test_images/food/tavuk_sis/1asd.jpg")
+is_predicted, prediction, path = dp.predict_image_keras("deep_predictor/images/test_images/food/tavuk_sis/1.jpg")
 
 # dp = deep_predictor()
 #dp.init_predictor(darknet=True, keras=False)
