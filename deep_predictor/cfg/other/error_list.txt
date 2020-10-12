@@ -1,0 +1,12 @@
+
+0 = "prediction id does not exists"
+100 = "not predicted"
+200 = "success predicted"
+
+300 = "image error"
+310 = "extension not supported"
+350 = "image not supported"
+
+500 = "prediction error"
+550 = "predictor backend not inited or crashed"
+
