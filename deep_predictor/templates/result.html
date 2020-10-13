@@ -6,13 +6,16 @@
 <div class="jumbotron jumbotron-fluid">
     <div class="center_div">
 
-        <div id="result_div">
+        <div id="header_div">
             <h1 class="display-4">Predicting</h1>
             </br>
             <div class="progress">
                 <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
             </div>
         </div>
+
+        </br>
+        <div id="result_div"></div>
 
         </br>
         <a class="btn btn-danger float-left" href="/upload" role="button">Try another image</a>
@@ -28,107 +31,6 @@
 
 <script type="text/javascript"src="{{ url_for('static', filename='js/result_handler.js') }}"></script>
 
-
-
-<!-- 
-<script>
-
-    const prediction_id = '{{ prediction_id }}';
-
-
-    const error_html = `
-        <h1 class="display-4">Prediction failed</h1>
-    `;
-
-
-
-    function fetch_api(){
-        fetch("/api?prediction_id=" + prediction_id)
-        .then((resp) => resp.json())
-        .then(function(data) {
-            if(data.prediction_status === 200){
-                console.log(data)
-                // var jsonPretty = JSON.stringify(data,null,2);
-
-                var result_div = document.getElementById('result_div');
-  
-
-                const confidence1 = data.predictions["1"].confidence*100
-                const confidence2 = data.predictions["2"].confidence*100
-                const confidence3 = data.predictions["3"].confidence*100
-
-                result_div.innerHTML = `
-                    <h1 class="display-4">Prediction results</h1>
-                        
-                    <h2>class: ${data.predictions["1"].class_name}</h2>
-                    <div class="progress">
-                        <div class="progress-bar" style="width:${confidence1}%">
-                        ${confidence1}%
-                        </div>
-                    </div>
-                    
-                    </br>
-                    <h2>class: ${data.predictions["2"].class_name}</h2>
-                    <div class="progress">
-                        <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="${confidence2}"
-                        aria-valuemin="0" aria-valuemax="100" style="width:${confidence2}%">
-                        ${confidence2}%
-                        </div>
-                    </div>
-
-                    </br>
-                    <h2>class: ${data.predictions["3"].class_name}</h2>
-                    <div class="progress">
-                        <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="${confidence3}"
-                        aria-valuemin="0" aria-valuemax="100" style="width:${confidence3}%">
-                        ${confidence3}%
-                        </div>
-                    </div>
-                `;
-
-
-
-
-
-                clearInterval(interval)
-                clearTimeout(timeout)
-                clearTimeout(timeout2)
-            }
-
-        })
-        .catch(function() {
-            console.log("error") 
-
-            result_div.innerHTML = error_html;
-
-        });
-
-
-    }
-
-
-
-    
-
-    let interval = setInterval(fetch_api, 1000);
-    
-
-    function timeout_function(){
-        clearInterval(interval)
-    }
-    
-    let timeout = setTimeout(timeout_function, 10000);
-
-
-
-    function timeout_function2(){
-        result_div.innerHTML = error_html;
-    }
-    
-    let timeout2 = setTimeout(timeout_function2, 11000);
-
-
-</script> -->
 
 
 {% endblock body %}
