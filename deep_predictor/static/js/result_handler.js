@@ -51,7 +51,7 @@ function animate_bar_charts(data){
     for (let i = 0; i < 100; i++) {
         setTimeout(function() {
             result_div.innerHTML = `
-                <h2>class: ${data.predictions["1"].class_name} (${is_confident})</h2>
+                <h2>${data.predictions["1"].class_name} (${is_confident})</h2>
                 <div class="progress">
                     <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:${Number.parseFloat(val1).toPrecision(4)}%">
                         <div class="chart_text"> 
@@ -62,7 +62,7 @@ function animate_bar_charts(data){
             `
 
             result_div.innerHTML += `
-                <h2>class: ${data.predictions["2"].class_name}</h2>
+                <h2>${data.predictions["2"].class_name}</h2>
                 <div class="progress">
                     <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width:${Number.parseFloat(val2).toPrecision(4)}%">
                         <div class="chart_text"> 
@@ -73,7 +73,7 @@ function animate_bar_charts(data){
             `
 
             result_div.innerHTML += `
-                <h2>class: ${data.predictions["3"].class_name}</h2>
+                <h2>${data.predictions["3"].class_name}</h2>
                 <div class="progress">
                     <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" style="width:${Number.parseFloat(val3).toPrecision(4)}%">
                         <div class="chart_text"> 
@@ -91,7 +91,7 @@ function animate_bar_charts(data){
             // show final results
             if(i === 99){
                 result_div.innerHTML = `
-                    <h2>class: ${data.predictions["1"].class_name} (${is_confident})</h2>
+                    <h2>${data.predictions["1"].class_name} (${is_confident})</h2>
                     <div class="progress">
                         <div class="progress-bar" style="width:${confidence1}%">
                             <div class="chart_text"> 
@@ -102,7 +102,7 @@ function animate_bar_charts(data){
                 `
 
                 result_div.innerHTML += `
-                    <h2>class: ${data.predictions["2"].class_name}</h2>
+                    <h2>${data.predictions["2"].class_name}</h2>
                     <div class="progress">
                         <div class="progress-bar bg-warning" style="width:${confidence2}%">
                             <div class="chart_text"> 
@@ -113,7 +113,7 @@ function animate_bar_charts(data){
                 `
 
                 result_div.innerHTML += `
-                    <h2>class: ${data.predictions["3"].class_name}</h2>
+                    <h2>${data.predictions["3"].class_name}</h2>
                     <div class="progress">
                         <div class="progress-bar bg-danger" style="width:${confidence3}%">
                             <div class="chart_text"> 

@@ -14,6 +14,11 @@ h2 {
     color: white;
 }
 
+.chart_text{
+    color: Black !important;
+    font-weight: bold !important;
+}
+
 .center_div {
     margin: 0 auto;
     width:70%
