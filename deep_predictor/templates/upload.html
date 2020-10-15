@@ -11,18 +11,41 @@
     <h1 class="display-4">Test Your Image</h1>
     
     <form method="POST" action="" enctype="multipart/form-data" id="image-form">
-      
-      <div class="custom-file">
-        <input type="file" name="file" class="custom-file-input" id="customFile" accept=".jpg,.jpeg,.png" >
-        <label class="custom-file-label" for="customFile">Choose image</label>
-      </div>
 
-      </br>
+        <div class="custom-file">
+            <input type="file" name="file" class="custom-file-input" id="customFile" accept=".jpg,.jpeg,.png" >
+            <label class="custom-file-label" for="customFile">Choose image</label>
+        </div>
 
-      <p><input type="hidden" name="prediction_id" id="prediction_id"></p>
-      <p><input type="hidden" name="model_id" id="model_id"></p>
-      <p><input type="submit" value="Submit" class="btn btn-danger">
-      <a class="btn btn-danger float-right" href="/" role="button">Main page</a></p>
+
+        <p><input type="hidden" name="prediction_id" id="prediction_id"></p>
+        <p><input type="hidden" name="model_name" id="model_name"></p>
+
+
+        <div class="row">
+            <div class="col-md-0">
+                <input type="submit" value="Submit" class="btn btn-danger">
+            </div>
+
+            <div class="col-md-8">
+
+                <div class="dropdown">
+                    <button class="btn btn-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+                        {{models[0]}}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        {% for model in models %}
+                            <a class="dropdown-item">{{model}}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+            <div class="col float-right">
+                <a class="btn btn-danger float-right" href="/" role="button">Main page</a>
+            </div>
+        </div>
+
     </form>
   </div>
 
@@ -33,37 +56,42 @@
 
 
 <script>
+    // generate prediction_id
 	const id = generate_id(12)
 	document.getElementById("prediction_id").value = id;
 	console.log("prediction_id: " + id);
 
-  document.getElementById("model_id").value = 1;
-  
 
-
-
-  // const form = document.querySelector("#image-form");
-  // const image_holder = document.querySelector("#customFile");
-
-  // form.addEventListener("submit", add_image);
-
-  // function add_image(e){
-
-  //   sessionStorage.setItem("aaaaa", image_holder.value)
-  //   console.log(image_holder.value);
-  //   // e.preventDefault();
-  // }
-
-
-</script>
-
-
-<script>
+    // file input text change
 	$(".custom-file-input").on("change", function() {
 	var fileName = $(this).val().split("\\").pop();
 	$(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-  });
+    });
+
+    // on dropdown change
+    $('.dropdown-menu a').on('click', function(){    
+        $('.dropdown-toggle').html($(this).html());
+        $('#model_name').val($(this).html());
+    })
+
+    // on dom load
+    $('document ').ready(function(){    
+        $('.dropdown-toggle').html($('.dropdown-menu a').html());
+        $('#model_name').val($('.dropdown-menu a').html());
+    })
+
+//   $('.dropdown').on('hidden.bs.dropdown', function () {
+    
+//     })
+
+//   $('.dropdown').click(function(){
+
+// $('.dropdown-menu').toggleClass('show');
+// console.log($(this).value);
+// });
+
 </script>
+
 
 
 {% endblock body %}
