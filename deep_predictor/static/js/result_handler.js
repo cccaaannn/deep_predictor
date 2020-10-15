@@ -143,13 +143,19 @@ function fetch_api(){
             // var jsonPretty = JSON.stringify(data,null,2);
 
 
-            if(data.model_id === 1){
+
+            
+            if(data.model_info.predictor_backend === "keras"){
                 on_success_keras(data);
             }
-            else if(data.model_id === 2){
+            else if(data.model_info.predictor_backend === "darknet"){
                 on_success_darknet(data);
             }
-            
+            else{
+                clearInterval(api_request_interval);
+                clearTimeout(api_request_timeout);
+                on_error();
+            }
 
 
             clearInterval(api_request_interval);
