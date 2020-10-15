@@ -2,7 +2,6 @@ import os
 import cv2
 import numpy as np
 
-
 import keras
 # import darknet
 
@@ -12,40 +11,57 @@ from logger_creator import logger_creator
 
 
 class deep_predictor():
-    def __init__(self, cfg_path="deep_predictor/cfg/deep_predictor.cfg"):
-        
-        self.__set_options(cfg_path)
-        
+    def __init__(self, cfg_path="deep_predictor/cfg/deep_predictor.cfg", init=False):
         self.logger = logger_creator().deep_predictor_logger()
 
-        self.is_darknet_inited = False
-        self.is_keras_inited = False
+        self.__set_options(cfg_path)
         
+        if(init):
+            self.is_inited = True
+            self.init_predictor()
+        else:
+            self.is_inited = False
+
+
 
     # class options
     def __set_options(self, cfg_path):
         cfg = file_folder_operations.read_json_file(cfg_path)
         
-        # general options
-        self.predictions_main_folder = cfg["deep_predictor_options"]["general"]["predictions_main_folder"] 
+        self.predictor_backend = cfg["predictor_options"]["model_info"]["predictor_backend"]
 
-        # darknet options
-        self.darknet_files = cfg["deep_predictor_options"]["darknet"]["darknet_files"]
-        self.darknet_predictions_main_folder = cfg["deep_predictor_options"]["darknet"]["darknet_predictions_main_folder"] 
-        self.darknet_configPath = cfg["deep_predictor_options"]["darknet"]["darknet_configPath"]
-        self.darknet_weightPath = cfg["deep_predictor_options"]["darknet"]["darknet_weightPath"]
-        self.darknet_metaPath = cfg["deep_predictor_options"]["darknet"]["darknet_metaPath"]
+        _ = cfg["predictor_options"]["model_info"]["model_id"]
+        _ = cfg["predictor_options"]["model_info"]["method"]
 
-        # keras options
-        self.keras_files = cfg["deep_predictor_options"]["keras"]["keras_files"]
-        self.keras_predictions_main_folder = cfg["deep_predictor_options"]["keras"]["keras_predictions_main_folder"] 
-        self.keras_model_path = cfg["deep_predictor_options"]["keras"]["keras_model_path"]
-        self.keras_names_path = cfg["deep_predictor_options"]["keras"]["keras_names_path"]
-        self.keras_image_size = (cfg["deep_predictor_options"]["keras"]["keras_image_w"], cfg["deep_predictor_options"]["keras"]["keras_image_h"])
-        self.keras_grayscale = cfg["deep_predictor_options"]["keras"]["keras_grayscale"]
-        self.keras_topN = cfg["deep_predictor_options"]["keras"]["keras_return_topN"]
-        self.keras_confidence_threshold = cfg["deep_predictor_options"]["keras"]["keras_confidence_threshold"]
-        self.keras_not_confiedent_name = cfg["deep_predictor_options"]["keras"]["keras_not_confiedent_name"]
+        if(self.predictor_backend == "keras"):
+            # keras options
+            self.model_info = cfg["predictor_options"]["model_info"]
+
+            # model info
+            self.keras_image_size = (cfg["predictor_options"]["model_info"]["image_w"], cfg["predictor_options"]["model_info"]["image_h"])
+            self.keras_grayscale = cfg["predictor_options"]["model_info"]["grayscale"]
+            self.keras_topN = cfg["predictor_options"]["model_info"]["return_topN"]
+            self.keras_confidence_threshold = cfg["predictor_options"]["model_info"]["confidence_threshold"]
+
+            # paths
+            self.keras_predictions_main_folder = cfg["predictor_options"]["paths"]["predictions_main_folder"] 
+            self.keras_model_path = cfg["predictor_options"]["paths"]["model_path"]
+            self.keras_names_path = cfg["predictor_options"]["paths"]["names_path"]
+            self.keras_not_confiedent_name = cfg["predictor_options"]["paths"]["not_confiedent_folder_name"]
+            
+
+
+        elif(self.predictor_backend == "darknet"):
+            # darknet options
+            # self.darknet_files = cfg["predictor_options"]["darknet"]["darknet_files"]
+            self.darknet_predictions_main_folder = cfg["predictor_options"]["darknet_predictions_main_folder"] 
+            self.darknet_configPath = cfg["predictor_options"]["darknet_configPath"]
+            self.darknet_weightPath = cfg["predictor_options"]["darknet_weightPath"]
+            self.darknet_metaPath = cfg["predictor_options"]["darknet_metaPath"]
+
+        else:
+            self.logger.error("predictor backend is not supported")
+
 
 
     # backend initers
@@ -72,14 +88,15 @@ class deep_predictor():
             self.logger.exception("could not load keras model")
             return False
 
-    def init_predictor(self, darknet = True, keras = False):
+    def init_predictor(self):
         """initiates a backend for prediction"""
-        if(darknet):
+        if(self.predictor_backend == "darknet"):
             if(self.__init_darknet()):
-                self.is_darknet_inited = True
-        if(keras):
+                self.is_inited = True
+        if(self.predictor_backend == "keras"):
             if(self.__init_keras()):
-                self.is_keras_inited = True
+                self.is_inited = True
+
 
 
     # prediction processing
@@ -106,8 +123,17 @@ class deep_predictor():
 
 
 
+    # unified predict function
+    def predict_image(self, image_path, save_image = ""):
+        if(self.predictor_backend == "keras"):
+            return self.predict_image_keras(image_path, save_image = save_image)
+        if(self.predictor_backend == "darknet"):
+            return self.predict_image_darknet(image_path, save_image = save_image)
+
+
+
     def predict_image_keras(self, image_path, save_image = ""):
-        if(self.is_keras_inited):
+        if(self.is_inited):
 
             # load image
             image = image_operations.load_image_keras(image_path, self.keras_image_size, self.keras_grayscale)
@@ -115,7 +141,7 @@ class deep_predictor():
             # check the image
             if(not isinstance(image, np.ndarray)):
                 self.logger.error("image could not been loaded")
-                return 350, None, None
+                return 350, self.model_info, None, None
             
             # prediction
             try:
@@ -123,7 +149,7 @@ class deep_predictor():
                 prediction_json = self.__keras_raw_prediction_to_json(raw_prediction)
             except:
                 self.logger.exception("model.predict raised exception")
-                return 500, None, None
+                return 500, self.model_info, None, None
 
             self.logger.info("predictions: {0}".format(prediction_json))
             
@@ -141,27 +167,27 @@ class deep_predictor():
                 predicted_image_path = image_operations.move_image_by_class_name(image_path, self.keras_predictions_main_folder, image_class)
             else:
                 pass
-    
+
             # success
-            return 200, prediction_json, predicted_image_path
+            return 200, self.model_info, prediction_json, predicted_image_path
         else:
             self.logger.warning("first init the keras backend")
-            return 550, None, None
+            return 550, self.model_info, None, None
+
 
 
     # TODO fix this function it is not meets new requirements
     def predict_image_darknet(self, image_path, save_image = ""):
-        if(self.is_darknet_inited):
-            # performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yolov4.cfg", weightPath = "yolov4.weights", metaPath= "./cfg/coco.data", showImage= True, makeImageOnly = False, initOnly= False):
+        if(self.is_inited):
 
-            # prediction exception handling 
+            # prediction 
             try:
                 result = darknet.performDetect(imagePath=image_path, configPath = self.darknet_configPath, weightPath = self.darknet_weightPath, metaPath= self.darknet_metaPath, showImage= False, makeImageOnly=True)
             except:
                 self.logger.exception("performDetect raised exception")
-                return False, None
+                return 500, None, None
 
-
+            # ******************************
             # handle result for user
             detections_str = "" 
 
@@ -188,9 +214,13 @@ class deep_predictor():
 
 
             return True, detections_str
+
+
+        # ******************************
+
         else:
             self.logger.warning("first init the darknet backend")
-            return False, None
+            return 550, None, None
 
 
 
