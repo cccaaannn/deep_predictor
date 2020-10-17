@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, 'deep_predictor')
+
 from deep_predictor import deep_predictor
 
 dp = deep_predictor("deep_predictor/cfg/predictors/darknet_coco.cfg", init=True)
