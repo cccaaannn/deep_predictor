@@ -3,6 +3,7 @@ from flask import Flask, request, render_template, redirect, abort, url_for
 from werkzeug.utils import secure_filename
 
 # other imports
+import uuid
 import sys
 import os
 
@@ -137,8 +138,12 @@ def upload_image():
             logger.warning("image extension is not supported")
             abort(400, description="image extension is not supported")
 
-
-        unique_full_filename = file_folder_operations.create_unique_file_name(os.path.join(temp_save_path, filename))
+        
+        # generate unique id
+        # unique_full_filename = file_folder_operations.create_unique_file_name(os.path.join(temp_save_path, filename))
+        unique_filename = str(uuid.uuid4())
+        _, file_extension = os.path.splitext(filename)
+        unique_full_filename = os.path.join(temp_save_path, unique_filename + file_extension)
         uploaded_file.save(unique_full_filename)
 
 
