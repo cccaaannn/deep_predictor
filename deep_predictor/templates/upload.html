@@ -2,10 +2,7 @@
 
 {% block body %}
 
-
-
 <div class="jumbotron jumbotron-fluid">
-
 
   <div class="center_div">
     <h1 class="display-4">Test Your Image</h1>
@@ -23,8 +20,8 @@
 
 
         <div class="row">
-            <div class="col-md-0">
-                <input type="submit" value="Submit" class="btn btn-danger">
+            <div class="col-md-2">
+                <input type="submit" value="Predict" class="btn btn-danger btn-lg">
             </div>
 
             <div class="col-md-8">
@@ -41,7 +38,7 @@
                 </div>
 
             </div>
-            <div class="col float-right">
+            <div class="col-md-2">
                 <a class="btn btn-danger float-right" href="/" role="button">Main page</a>
             </div>
         </div>
@@ -54,44 +51,7 @@
 </br></br></br>
 
 
-
-<script>
-    // generate prediction_id
-	const id = generate_id(12)
-	document.getElementById("prediction_id").value = id;
-	console.log("prediction_id: " + id);
-
-
-    // file input text change
-	$(".custom-file-input").on("change", function() {
-	var fileName = $(this).val().split("\\").pop();
-	$(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-    });
-
-    // on dropdown change
-    $('.dropdown-menu a').on('click', function(){    
-        $('.dropdown-toggle').html($(this).html());
-        $('#model_name').val($(this).html());
-    })
-
-    // on dom load
-    $('document ').ready(function(){    
-        $('.dropdown-toggle').html($('.dropdown-menu a').html());
-        $('#model_name').val($('.dropdown-menu a').html());
-    })
-
-//   $('.dropdown').on('hidden.bs.dropdown', function () {
-    
-//     })
-
-//   $('.dropdown').click(function(){
-
-// $('.dropdown-menu').toggleClass('show');
-// console.log($(this).value);
-// });
-
-</script>
-
+<script type="text/javascript"src="{{ url_for('static', filename='js/upload_controller.js') }}"></script>
 
 
 {% endblock body %}
