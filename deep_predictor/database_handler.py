@@ -78,7 +78,7 @@ class database_handler():
         """updates failed prediction"""
         try:
             with sqlite3.connect(self.database_path) as connection:
-                self.logger.info("function: {0} param: {1}, {2}, {3}".format("update_failed_prediction", prediction_id, prediction_status, model_info, model_id))
+                self.logger.info("function: {0} param: {1}, {2}, {3}, {4}".format("update_failed_prediction", prediction_id, prediction_status, model_info, model_id))
                 query = """ UPDATE predictions SET 
                 prediction_status = ?,
                 model_info = ?,
