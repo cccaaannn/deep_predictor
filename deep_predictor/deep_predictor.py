@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 import keras
-# import darknet
+# from model_files.darknet_files.darknet import performDetect
 
 from helpers.file_folder_operations import file_folder_operations
 from helpers.image_operations import image_operations
@@ -11,7 +11,7 @@ from logger_creator import logger_creator
 
 
 class deep_predictor():
-    def __init__(self, cfg_path="deep_predictor/cfg/deep_predictor.cfg", init=False):
+    def __init__(self, cfg_path, init=False):
         self.logger = logger_creator().deep_predictor_logger()
 
         self.__set_options(cfg_path)
@@ -33,31 +33,39 @@ class deep_predictor():
         _ = cfg["predictor_options"]["model_info"]["model_id"]
         _ = cfg["predictor_options"]["model_info"]["method"]
 
+
         if(self.predictor_backend == "keras"):
             # keras options
-            self.model_info = cfg["predictor_options"]["model_info"]
 
             # model info
+            self.model_info = cfg["predictor_options"]["model_info"]
             self.keras_image_size = (cfg["predictor_options"]["model_info"]["image_w"], cfg["predictor_options"]["model_info"]["image_h"])
             self.keras_grayscale = cfg["predictor_options"]["model_info"]["grayscale"]
             self.keras_topN = cfg["predictor_options"]["model_info"]["return_topN"]
-            self.keras_confidence_threshold = cfg["predictor_options"]["model_info"]["confidence_threshold"]
+            self.confidence_threshold = cfg["predictor_options"]["model_info"]["confidence_threshold"]
 
             # paths
             self.keras_predictions_main_folder = cfg["predictor_options"]["paths"]["predictions_main_folder"] 
             self.keras_model_path = cfg["predictor_options"]["paths"]["model_path"]
             self.keras_names_path = cfg["predictor_options"]["paths"]["names_path"]
-            self.keras_not_confiedent_name = cfg["predictor_options"]["paths"]["not_confiedent_folder_name"]
+            self.not_confiedent_name = cfg["predictor_options"]["paths"]["not_confiedent_folder_name"]
             
 
 
         elif(self.predictor_backend == "darknet"):
             # darknet options
-            # self.darknet_files = cfg["predictor_options"]["darknet"]["darknet_files"]
-            self.darknet_predictions_main_folder = cfg["predictor_options"]["darknet_predictions_main_folder"] 
-            self.darknet_configPath = cfg["predictor_options"]["darknet_configPath"]
-            self.darknet_weightPath = cfg["predictor_options"]["darknet_weightPath"]
-            self.darknet_metaPath = cfg["predictor_options"]["darknet_metaPath"]
+
+            # model info
+            self.model_info = cfg["predictor_options"]["model_info"]
+            self.confidence_threshold = cfg["predictor_options"]["model_info"]["confidence_threshold"]
+            
+            # paths
+            self.darknet_predictions_main_folder = cfg["predictor_options"]["paths"]["darknet_predictions_main_folder"] 
+            self.darknet_configPath = cfg["predictor_options"]["paths"]["darknet_configPath"]
+            self.darknet_weightPath = cfg["predictor_options"]["paths"]["darknet_weightPath"]
+            self.darknet_metaPath = cfg["predictor_options"]["paths"]["darknet_metaPath"]
+            self.not_confiedent_name = cfg["predictor_options"]["paths"]["not_confiedent_folder_name"]
+
 
         else:
             self.logger.error("predictor backend is not supported")
@@ -68,7 +76,7 @@ class deep_predictor():
     def __init_darknet(self):
         self.logger.info("loading darknet network to ram")
         try:
-            darknet.performDetect(configPath = self.darknet_configPath, weightPath = self.darknet_weightPath, metaPath= self.darknet_metaPath, initOnly=True)
+            performDetect(configPath = self.darknet_configPath, weightPath = self.darknet_weightPath, metaPath= self.darknet_metaPath, initOnly=True)
             return True
         except:
             self.logger.exception("could not load darknet model")
@@ -110,29 +118,72 @@ class deep_predictor():
             temp_prediction = {
                 "class_index" : pred,
                 "class_name" : str(self.keras_names[pred]),
-                "confidence" :  raw_prediction[0][pred]
+                "confidence" :  float("{0:.5f}".format(raw_prediction[0][pred]))
             }
 
             predictions["predictions"].update({str(index+1) : temp_prediction})
 
         # if first guess is lover than threshold mark as not confident
-        if(predictions["predictions"]["1"]["confidence"] < self.keras_confidence_threshold):
+        if(predictions["predictions"]["1"]["confidence"] < self.confidence_threshold):
             predictions["predictions"].update({"is_confident" : 0})
         
         return predictions
 
+    def __darknet_raw_prediction_to_json(self, raw_prediction):
+        predictions = {"predictions":[], "is_any_object_detected" : 0}
+        most_confident_score = 0
+        most_confident_class = ""
+        
+        if(raw_prediction):
+            for index, element in enumerate(raw_prediction):
+                
+                # convert coordinates (from darknet.py)
+                bounds = element[2]
+                yExtent = int(bounds[3])
+                xEntent = int(bounds[2])
+                x1 = int(bounds[0] - bounds[2]/2)
+                y1 = int(bounds[1] - bounds[3]/2)
+
+                x2 = x1 + xEntent
+                y2 = y1 + yExtent
+
+
+                temp_dict = {index+1 : {
+                        "class_name" : element[0],
+                        "confidence" : float("{0:.5f}".format(element[1])),
+                        "bbox" : {
+                            "x1" : x1,
+                            "y1" : y1,
+                            "x2" : x2,
+                            "y2" : y2                     
+                        } 
+                    }
+                }
+
+                predictions["predictions"].append(temp_dict)
+                predictions["is_any_object_detected"] = 1
+
+                if(element[1] > most_confident_score):
+                    most_confident_score = element[1]
+                    most_confident_class = element[0]
+
+            return True, predictions, most_confident_class
+        
+        else:
+            return False, predictions, most_confident_class
+
+
 
 
     # unified predict function
-    def predict_image(self, image_path, save_image = ""):
+    def predict_image(self, image_path, image_action = ""):
         if(self.predictor_backend == "keras"):
-            return self.predict_image_keras(image_path, save_image = save_image)
+            return self.predict_image_keras(image_path, image_action = image_action)
         if(self.predictor_backend == "darknet"):
-            return self.predict_image_darknet(image_path, save_image = save_image)
+            return self.predict_image_darknet(image_path, image_action = image_action)
 
 
-
-    def predict_image_keras(self, image_path, save_image = ""):
+    def predict_image_keras(self, image_path, image_action = ""):
         if(self.is_inited):
 
             # load image
@@ -155,14 +206,14 @@ class deep_predictor():
             
             # save-remove
             predicted_image_path = None
-            if(save_image == "remove"):
+            if(image_action == "remove"):
                 os.remove(image_path)
-            elif(save_image == "save"):
+            elif(image_action == "save"):
 
                 if(prediction_json["predictions"]["is_confident"]):
                     image_class = prediction_json["predictions"]["1"]["class_name"]
                 else:
-                    image_class = self.keras_not_confiedent_name
+                    image_class = self.not_confiedent_name
 
                 predicted_image_path = image_operations.move_image_by_class_name(image_path, self.keras_predictions_main_folder, image_class)
             else:
@@ -176,51 +227,38 @@ class deep_predictor():
 
 
 
-    # TODO fix this function it is not meets new requirements
-    def predict_image_darknet(self, image_path, save_image = ""):
+    def predict_image_darknet(self, image_path, image_action = ""):
         if(self.is_inited):
 
             # prediction 
             try:
-                result = darknet.performDetect(imagePath=image_path, configPath = self.darknet_configPath, weightPath = self.darknet_weightPath, metaPath= self.darknet_metaPath, showImage= False, makeImageOnly=True)
+                raw_prediction = performDetect(thresh=self.confidence_threshold, imagePath=image_path, configPath = self.darknet_configPath, weightPath = self.darknet_weightPath, metaPath= self.darknet_metaPath, showImage= False, makeImageOnly=True)
             except:
                 self.logger.exception("performDetect raised exception")
-                return 500, None, None
+                return 500, self.model_info, None, None
 
-            # ******************************
-            # handle result for user
-            detections_str = "" 
+            # convert prediction
+            status, predictions, most_confident_class = self.__darknet_raw_prediction_to_json(raw_prediction)
 
-            if(result and result["detections"]):    
-                for detection in result["detections"]:
-                    detections_str += "{0} - {1:.2f}\n".format(detection[0], detection[1])
+            # if nothing detected
+            if(not status):
+                most_confident_class = self.not_confiedent_name           
 
-                # print(result)
-                # TODO database
-                # assign image to first predicted classes folder
-                image_class = result["detections"][0][0]
 
-            else:
-                detections_str = "not-classified"
-                image_class = "not-classified"
-
-            # save image by class
-            if(save_image == "save"):
-                image_operations.move_image_by_class_name(image_path, self.darknet_predictions_main_folder, image_class)
-            elif(save_image == "remove"):
+            # save-remove
+            predicted_image_path = None
+            if(image_action == "remove"):
                 os.remove(image_path)
+            elif(image_action == "save"):
+                predicted_image_path = image_operations.move_image_by_class_name(image_path, self.darknet_predictions_main_folder, most_confident_class)
             else:
                 pass
 
-
-            return True, detections_str
-
-
-        # ******************************
-
+            # success
+            return 200, self.model_info, predictions, predicted_image_path
         else:
             self.logger.warning("first init the darknet backend")
-            return 550, None, None
+            return 550, self.model_info, None, None
 
 
 

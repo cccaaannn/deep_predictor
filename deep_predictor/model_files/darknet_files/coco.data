@@ -1,8 +1,8 @@
 classes= 80
-train  = /home/pjreddie/data/coco/trainvalno5k.txt
+train  = 
 valid  = coco_testdev
 #valid = data/coco_val_5k.list
-names = darknet_files/coco.names
-backup = /home/pjreddie/backup/
+names = deep_predictor/model_files/darknet_files/coco.names
+backup = 
 eval=coco
 

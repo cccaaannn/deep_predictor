@@ -20,10 +20,10 @@ class prediction_thread(threading.Thread):
         if(self.tf_version == "1"):
             # tf_graph is needed fot model to run on a thread
             with self.tf_graph.as_default():
-                status, model_info, prediction, image_path = self.predictor.predict_image(self.temp_image_path, save_image = "save")
+                status, model_info, prediction, image_path = self.predictor.predict_image(self.temp_image_path, image_action = "save")
 
         elif(self.tf_version == "2" or self.tf_version == "dummy"):
-            status, model_info, prediction, image_path = self.predictor.predict_image(self.temp_image_path, save_image = "save")
+            status, model_info, prediction, image_path = self.predictor.predict_image(self.temp_image_path, image_action = "save")
 
         else:
             self.logger.error("tensorflow version not supported")
