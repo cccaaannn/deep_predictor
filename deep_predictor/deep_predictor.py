@@ -2,9 +2,11 @@ import os
 import cv2
 import numpy as np
 
+# import backends
 import keras
-# from model_files.darknet_files.darknet import performDetect
+# from model_files.darknet_files.darknet_modified import performDetect
 
+# my classes
 from helpers.file_folder_operations import file_folder_operations
 from helpers.image_operations import image_operations
 from logger_creator import logger_creator
@@ -129,33 +131,36 @@ class deep_predictor():
         
         return predictions
 
-    def __darknet_raw_prediction_to_json(self, raw_prediction):
+    def __darknet_raw_prediction_to_json(self, raw_prediction, image_width, image_height):
         predictions = {"predictions":[], "is_any_object_detected" : 0}
         most_confident_score = 0
         most_confident_class = ""
         
         if(raw_prediction):
             for index, element in enumerate(raw_prediction):
-                
+
                 # convert coordinates (from darknet.py)
+                # x2 = x1 - w/2 + w
+                # x1 = int(bounds[0] - bounds[2] / 2)
+                # y1 = int(bounds[1] - bounds[3] / 2)
+                # x2 = x1 + int(bounds[2])
+                # y2 = y1 + int(bounds[3])
+
+                # ratio bboxes
                 bounds = element[2]
-                yExtent = int(bounds[3])
-                xEntent = int(bounds[2])
-                x1 = int(bounds[0] - bounds[2]/2)
-                y1 = int(bounds[1] - bounds[3]/2)
-
-                x2 = x1 + xEntent
-                y2 = y1 + yExtent
-
+                cx = bounds[0] / image_width
+                cy = bounds[1] / image_height
+                w = bounds[2] / image_width
+                h = bounds[3] / image_height
 
                 temp_dict = {index+1 : {
                         "class_name" : element[0],
                         "confidence" : float("{0:.5f}".format(element[1])),
                         "bbox" : {
-                            "x1" : x1,
-                            "y1" : y1,
-                            "x2" : x2,
-                            "y2" : y2                     
+                            "cx" : float("{0:.5f}".format(cx)),
+                            "cy" : float("{0:.5f}".format(cy)),
+                            "w" : float("{0:.5f}".format(w)),
+                            "h" : float("{0:.5f}".format(h))                     
                         } 
                     }
                 }
@@ -232,13 +237,13 @@ class deep_predictor():
 
             # prediction 
             try:
-                raw_prediction = performDetect(thresh=self.confidence_threshold, imagePath=image_path, configPath = self.darknet_configPath, weightPath = self.darknet_weightPath, metaPath= self.darknet_metaPath, showImage= False, makeImageOnly=True)
+                raw_prediction, image_width, image_height = performDetect(imagePath=image_path, thresh=self.confidence_threshold, configPath = self.darknet_configPath, weightPath = self.darknet_weightPath, metaPath= self.darknet_metaPath, showImage= False)
             except:
                 self.logger.exception("performDetect raised exception")
                 return 500, self.model_info, None, None
 
             # convert prediction
-            status, predictions, most_confident_class = self.__darknet_raw_prediction_to_json(raw_prediction)
+            status, predictions, most_confident_class = self.__darknet_raw_prediction_to_json(raw_prediction, image_width, image_height)
 
             # if nothing detected
             if(not status):
