@@ -18,49 +18,9 @@ from helpers.image_operations import image_operations
 
 
 
-# creates predictor for tf version
-def create_predictors(tensorflow_version):
-    predictors = {}
-    tf_graph = None
-
-    if(tensorflow_version == "2"):
-        from deep_predictor import deep_predictor
-        for predictor in cfg["predictors"]:
-            predictors.update({
-                predictor : deep_predictor(cfg["predictors"][predictor], init=True)
-            })
-
-    elif(tensorflow_version == "1"):
-        from deep_predictor import deep_predictor
-        for predictor in cfg["predictors"]:
-            predictors.update({
-                predictor : deep_predictor(cfg["predictors"][predictor], init=True)
-            })
-        import tensorflow as tf
-        tf_graph = tf.get_default_graph()
-
-    elif(tensorflow_version == "dummy"):
-        # dummy predictor for testing without keras or tf
-        from predictor_dummy import predictor as deep_predictor
-
-        for predictor in cfg["predictors"]:
-            predictors.update({
-                predictor : deep_predictor(init=True)
-            })
-
-    else:
-        logger.critical("tensorflow version not supported")
-        raise ValueError("tensorflow version not supported")
-
-    return predictors, tf_graph
-
-
-
-
 
 # cfg path
 flask_cfg_path = "deep_predictor/cfg/flask.cfg"
-
 
 
 # create app
@@ -69,7 +29,6 @@ app = Flask(__name__)
 # set config options
 cfg = file_folder_operations.read_json_file(flask_cfg_path)
 
-tensorflow_version = cfg["flask_options"]["tensorflow_version"]
 database_handler_cfg_path = cfg["flask_options"]["database_handler_cfg_path"]
 supported_extensions = cfg["flask_options"]["supported_extensions"]
 temp_save_path = cfg["flask_options"]["temp_save_path"]
@@ -86,9 +45,14 @@ app.config['MAX_CONTENT_LENGTH'] = cfg["flask_options"]["MAX_CONTENT_LENGTH"]
 logger = logger_creator().flask_logger()
 db = database_handler(database_handler_cfg_path)
 
-# create predictors
-predictors, tf_graph = create_predictors(tensorflow_version)
 
+# create predictors
+from deep_predictor import deep_predictor
+predictors = {}
+for predictor in cfg["predictors"]:
+    predictors.update({
+        predictor : deep_predictor(cfg["predictors"][predictor], init=True)
+    })
 
 
 
@@ -161,9 +125,7 @@ def upload_image():
             database_handler_cfg_path, 
             unique_full_filename, 
             prediction_id, 
-            predictor=predictors[model_name], 
-            tf_version=tensorflow_version, 
-            tf_graph=tf_graph, 
+            predictor=predictors[model_name]
             )
         
         pred_thread.start()

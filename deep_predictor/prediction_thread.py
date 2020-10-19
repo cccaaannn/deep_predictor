@@ -4,29 +4,18 @@ from logger_creator import logger_creator
 
 
 class prediction_thread(threading.Thread):
-    def __init__(self, database_handler_cfg_path, temp_image_path, prediction_id, predictor, tf_version="dummy", tf_graph = None):
+    def __init__(self, database_handler_cfg_path, temp_image_path, prediction_id, predictor):
         super().__init__()
         self.db = database_handler(database_handler_cfg_path)
         self.logger = logger_creator().prediction_thread_logger()
         self.predictor = predictor
         self.prediction_id = prediction_id
         self.temp_image_path = temp_image_path
-        self.tf_version = tf_version
-        self.tf_graph = tf_graph
 
     def run(self):
         self.logger.info("prediction started on thread")
 
-        if(self.tf_version == "1"):
-            # tf_graph is needed fot model to run on a thread
-            with self.tf_graph.as_default():
-                status, model_info, prediction, image_path = self.predictor.predict_image(self.temp_image_path, image_action = "save")
-
-        elif(self.tf_version == "2" or self.tf_version == "dummy"):
-            status, model_info, prediction, image_path = self.predictor.predict_image(self.temp_image_path, image_action = "save")
-
-        else:
-            self.logger.error("tensorflow version not supported")
+        status, model_info, prediction, image_path = self.predictor.predict_image(self.temp_image_path, image_action = "save")
 
         self.logger.info("prediction status {0}".format(status))
 

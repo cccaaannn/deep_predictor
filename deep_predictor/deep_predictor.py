@@ -4,6 +4,7 @@ import numpy as np
 
 # import backends
 import keras
+import tensorflow as tf
 # from model_files.darknet_files.darknet_modified import performDetect
 
 # my classes
@@ -45,7 +46,12 @@ class deep_predictor():
             self.keras_grayscale = cfg["predictor_options"]["model_info"]["grayscale"]
             self.keras_topN = cfg["predictor_options"]["model_info"]["return_topN"]
             self.confidence_threshold = cfg["predictor_options"]["model_info"]["confidence_threshold"]
-
+            
+            self.tensorflow_version = cfg["predictor_options"]["model_info"]["tensorflow_version"]
+            # graph for tf 1 session
+            if(self.tensorflow_version == 1):
+                self.tf_graph = tf.get_default_graph()
+            
             # paths
             self.keras_predictions_main_folder = cfg["predictor_options"]["paths"]["predictions_main_folder"] 
             self.keras_model_path = cfg["predictor_options"]["paths"]["model_path"]
@@ -199,7 +205,15 @@ class deep_predictor():
             
             # prediction
             try:
-                raw_prediction = self.keras_model.predict(image)
+                # tf 1 uses sessions
+                if(self.tensorflow_version == 1):
+                    with self.tf_graph.as_default():
+                        raw_prediction = self.keras_model.predict(image)
+                elif(self.tensorflow_version == 2):
+                    raw_prediction = self.keras_model.predict(image)
+                else:
+                    raise ValueError("tensorflow version not supported (give 1 or 2)")
+
                 prediction_json = self.__keras_raw_prediction_to_json(raw_prediction)
             except:
                 self.logger.exception("model.predict raised exception")
