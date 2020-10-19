@@ -5,8 +5,7 @@
 my_bot_key.py
 *.db
 venv
-deep_predictor/images/predictions/keras
-deep_predictor/images/predictions/yolo
+deep_predictor/images/predictions/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
