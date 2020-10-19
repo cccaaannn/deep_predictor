@@ -11,7 +11,18 @@ function on_success_keras(data){
 
 
 function on_success_darknet(data){
-
+    if(data.predictions.length < 1){
+        header_div.innerHTML = `<h1 class="display-4">Nothing detected</h1>`;
+    }
+    else{
+        header_div.innerHTML = `<h1 class="display-4">Prediction results</h1>`;
+        let predictions = data.predictions;
+        for (let index = 0; index < predictions.length; index++) {
+            result_div.innerHTML += `
+            <h2>${predictions[index].class_name}  (% ${predictions[index].confidence})</h2>
+            `
+        }
+    }
 }
 
 
