@@ -132,7 +132,7 @@ class deep_predictor():
         return predictions
 
     def __darknet_raw_prediction_to_json(self, raw_prediction, image_width, image_height):
-        predictions = {"predictions":[], "is_any_object_detected" : 0}
+        predictions = {"predictions":[]}
         most_confident_score = 0
         most_confident_class = ""
         
@@ -153,7 +153,7 @@ class deep_predictor():
                 w = bounds[2] / image_width
                 h = bounds[3] / image_height
 
-                temp_dict = {index+1 : {
+                temp_dict = {
                         "class_name" : element[0],
                         "confidence" : float("{0:.5f}".format(element[1])),
                         "bbox" : {
@@ -163,10 +163,8 @@ class deep_predictor():
                             "h" : float("{0:.5f}".format(h))                     
                         } 
                     }
-                }
-
+                
                 predictions["predictions"].append(temp_dict)
-                predictions["is_any_object_detected"] = 1
 
                 if(element[1] > most_confident_score):
                     most_confident_score = element[1]
