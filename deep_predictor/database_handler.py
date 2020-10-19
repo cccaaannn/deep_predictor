@@ -85,7 +85,7 @@ class database_handler():
                 model_id = ? 
                 WHERE prediction_id = ?;"""
                 cursor = connection.cursor()   
-                cursor.execute(query, (prediction_status, model_info, model_id, prediction_id))
+                cursor.execute(query, (prediction_status, str(model_info), model_id, prediction_id))
                 connection.commit()
         except:
             self.logger.critical("", exc_info=True)
