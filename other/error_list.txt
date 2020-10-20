@@ -1,0 +1,15 @@
+
+0 = prediction id does not exists
+100 = not predicted
+200 = success predicted
+
+
+predictor errors
+500 = general prediction error
+510 = image is not supported
+520 = prediction cannot converted to json
+530 = predicted image could not been saved, moved or deleted
+550 = predictor backend not inited or crashed
+560 = tensorflow version not supported
+570 = predictor backend is not supported
+
