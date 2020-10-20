@@ -19,65 +19,66 @@ class deep_predictor():
 
         self.__set_options(cfg_path)
         
+        self.is_inited = False
         if(init):
-            self.is_inited = True
             self.init_predictor()
-        else:
-            self.is_inited = False
-
 
 
     # class options
     def __set_options(self, cfg_path):
-        cfg = file_folder_operations.read_json_file(cfg_path)
-        
-        self.predictor_backend = cfg["predictor_options"]["model_info"]["predictor_backend"]
-
-        _ = cfg["predictor_options"]["model_info"]["model_id"]
-        _ = cfg["predictor_options"]["model_info"]["method"]
-
-
-        if(self.predictor_backend == "keras"):
-            # keras options
-
-            # model info
-            self.model_info = cfg["predictor_options"]["model_info"]
-            self.keras_image_size = (cfg["predictor_options"]["model_info"]["image_w"], cfg["predictor_options"]["model_info"]["image_h"])
-            self.keras_grayscale = cfg["predictor_options"]["model_info"]["grayscale"]
-            self.keras_topN = cfg["predictor_options"]["model_info"]["return_topN"]
-            self.confidence_threshold = cfg["predictor_options"]["model_info"]["confidence_threshold"]
+        try:
+            cfg = file_folder_operations.read_json_file(cfg_path)
             
-            self.tensorflow_version = cfg["predictor_options"]["model_info"]["tensorflow_version"]
-            # graph for tf 1 session
-            if(self.tensorflow_version == 1):
-                self.tf_graph = tf.get_default_graph()
-            
-            # paths
-            self.keras_predictions_main_folder = cfg["predictor_options"]["paths"]["predictions_main_folder"] 
-            self.keras_model_path = cfg["predictor_options"]["paths"]["model_path"]
-            self.keras_names_path = cfg["predictor_options"]["paths"]["names_path"]
-            self.not_confiedent_name = cfg["predictor_options"]["paths"]["not_confiedent_folder_name"]
-            
+            self.predictor_backend = cfg["predictor_options"]["model_info"]["predictor_backend"]
 
+            # this info only needed for sending to frontend
+            _ = cfg["predictor_options"]["model_info"]["model_id"]
 
-        elif(self.predictor_backend == "darknet"):
-            # darknet options
+            if(self.predictor_backend == "keras"):
+                # model info
+                self.model_info = cfg["predictor_options"]["model_info"]
+                self.method = cfg["predictor_options"]["model_info"]["method"]
+                self.confidence_threshold = cfg["predictor_options"]["model_info"]["confidence_threshold"]
 
-            # model info
-            self.model_info = cfg["predictor_options"]["model_info"]
-            self.confidence_threshold = cfg["predictor_options"]["model_info"]["confidence_threshold"]
-            
-            # paths
-            self.darknet_predictions_main_folder = cfg["predictor_options"]["paths"]["darknet_predictions_main_folder"] 
-            self.darknet_configPath = cfg["predictor_options"]["paths"]["darknet_configPath"]
-            self.darknet_weightPath = cfg["predictor_options"]["paths"]["darknet_weightPath"]
-            self.darknet_metaPath = cfg["predictor_options"]["paths"]["darknet_metaPath"]
-            self.not_confiedent_name = cfg["predictor_options"]["paths"]["not_confiedent_folder_name"]
+                self.keras_image_size = (cfg["predictor_options"]["model_info"]["image_w"], cfg["predictor_options"]["model_info"]["image_h"])
+                self.keras_grayscale = cfg["predictor_options"]["model_info"]["grayscale"]
+                self.keras_topN = cfg["predictor_options"]["model_info"]["return_topN"]
 
+                # graph for tf 1 session
+                self.tensorflow_version = cfg["predictor_options"]["model_info"]["tensorflow_version"]
+                if(self.tensorflow_version == 1):
+                    self.tf_graph = tf.get_default_graph()
+                
+                # paths
+                # common paths
+                self.predictions_main_folder = cfg["predictor_options"]["paths"]["predictions_main_folder"] 
+                self.not_confiedent_name = cfg["predictor_options"]["paths"]["not_confiedent_folder_name"] 
 
-        else:
-            self.logger.error("predictor backend is not supported")
+                # backend specific paths
+                self.keras_model_path = cfg["predictor_options"]["paths"]["model_path"]
+                self.keras_names_path = cfg["predictor_options"]["paths"]["names_path"]
 
+            elif(self.predictor_backend == "darknet"):
+                # model info
+                self.model_info = cfg["predictor_options"]["model_info"]
+                self.method = cfg["predictor_options"]["model_info"]["method"]
+                self.confidence_threshold = cfg["predictor_options"]["model_info"]["confidence_threshold"]
+                
+                # paths
+                # common paths
+                self.predictions_main_folder = cfg["predictor_options"]["paths"]["predictions_main_folder"] 
+                self.not_confiedent_name = cfg["predictor_options"]["paths"]["not_confiedent_folder_name"]
+                
+                # backend specific paths
+                self.darknet_configPath = cfg["predictor_options"]["paths"]["darknet_configPath"]
+                self.darknet_weightPath = cfg["predictor_options"]["paths"]["darknet_weightPath"]
+                self.darknet_metaPath = cfg["predictor_options"]["paths"]["darknet_metaPath"]
+
+            else:
+                self.logger.error("cfg file error, predictor backend is not supported")
+
+        except:
+            self.logger.error("cfg file error", exc_info=True)
 
 
     # backend initers
@@ -114,10 +115,10 @@ class deep_predictor():
                 self.is_inited = True
 
 
-
     # prediction processing
     def __keras_raw_prediction_to_json(self, raw_prediction):
         """converts keras raw prediction to json with required fields"""
+        self.logger.info("converting raw_prediction to json raw_prediction: {0}".format(raw_prediction))
         predictions = {"predictions" : {"is_confident" : 1}}
 
         topN_preds = raw_prediction.argsort()[0][-self.keras_topN:][::-1]
@@ -131,13 +132,18 @@ class deep_predictor():
 
             predictions["predictions"].update({str(index+1) : temp_prediction})
 
-        # if first guess is lover than threshold mark as not confident
+        # if first guess is lover than threshold mark as not confident and set image class to not-confident for saving
         if(predictions["predictions"]["1"]["confidence"] < self.confidence_threshold):
             predictions["predictions"].update({"is_confident" : 0})
-        
-        return predictions
+            image_class = self.not_confiedent_name
+        else:
+            image_class = predictions["predictions"]["1"]["class_name"]
+
+        return predictions, image_class
 
     def __darknet_raw_prediction_to_json(self, raw_prediction, image_width, image_height):
+        """converts darknet raw prediction to json with required fields"""
+        self.logger.info("converting raw_prediction to json raw_prediction: {0}".format(raw_prediction))
         predictions = {"predictions":[]}
         most_confident_score = 0
         most_confident_class = ""
@@ -182,26 +188,18 @@ class deep_predictor():
             return False, predictions, most_confident_class
 
 
-
-
-    # unified predict function
-    def predict_image(self, image_path, image_action = ""):
-        if(self.predictor_backend == "keras"):
-            return self.predict_image_keras(image_path, image_action = image_action)
-        if(self.predictor_backend == "darknet"):
-            return self.predict_image_darknet(image_path, image_action = image_action)
-
-
-    def predict_image_keras(self, image_path, image_action = ""):
+    # prediction functions
+    def __predict_image_keras(self, image_path, image_action = ""):
+        self.logger.info("performing prediction on the image path: {0} image action is: {1}".format(image_path, image_action))
+        
         if(self.is_inited):
-
             # load image
             image = image_operations.load_image_keras(image_path, self.keras_image_size, self.keras_grayscale)
 
             # check the image
             if(not isinstance(image, np.ndarray)):
                 self.logger.error("image could not been loaded")
-                return 350, self.model_info, None, None
+                return 510, self.model_info, None, None
             
             # prediction
             try:
@@ -212,71 +210,92 @@ class deep_predictor():
                 elif(self.tensorflow_version == 2):
                     raw_prediction = self.keras_model.predict(image)
                 else:
-                    raise ValueError("tensorflow version not supported (give 1 or 2)")
-
-                prediction_json = self.__keras_raw_prediction_to_json(raw_prediction)
+                    self.logger.error("tensorflow version not supported (give 1 or 2)")
+                    return 560, self.model_info, None, None
             except:
-                self.logger.exception("model.predict raised exception")
+                self.logger.error("model.predict raised exception", exc_info=True)
                 return 500, self.model_info, None, None
 
-            self.logger.info("predictions: {0}".format(prediction_json))
+            # convert prediction
+            try:
+                prediction_json, image_class = self.__keras_raw_prediction_to_json(raw_prediction)
+                self.logger.info("predictions: {0}".format(prediction_json))
+            except:
+                self.logger.error("prediction can not converted to json", exc_info=True)
+                return 520, self.model_info, None, None
             
-            # save-remove
-            predicted_image_path = None
-            if(image_action == "remove"):
-                os.remove(image_path)
-            elif(image_action == "save"):
-
-                if(prediction_json["predictions"]["is_confident"]):
-                    image_class = prediction_json["predictions"]["1"]["class_name"]
+            # perform image action
+            try:
+                self.logger.info("performing chosen action to image ({0})".format(image_action))
+                predicted_image_path = None
+                if(image_action == "remove"):
+                    os.remove(image_path)
+                elif(image_action == "save"):
+                    predicted_image_path = image_operations.move_image_by_class_name(image_path, self.predictions_main_folder, image_class)
                 else:
-                    image_class = self.not_confiedent_name
-
-                predicted_image_path = image_operations.move_image_by_class_name(image_path, self.keras_predictions_main_folder, image_class)
-            else:
-                pass
+                    pass
+            except:
+                self.logger.error("image action may not been performed", exc_info=True)
+                return 530, self.model_info, None, None
 
             # success
             return 200, self.model_info, prediction_json, predicted_image_path
         else:
-            self.logger.warning("first init the keras backend")
+            self.logger.error("backend for this predictor is not inited")
             return 550, self.model_info, None, None
 
-
-
-    def predict_image_darknet(self, image_path, image_action = ""):
+    def __predict_image_darknet(self, image_path, image_action = ""):
+        self.logger.info("performing prediction on the image path: {0} image action is: {1}".format(image_path, image_action))
+        
         if(self.is_inited):
-
+            
             # prediction 
             try:
                 raw_prediction, image_width, image_height = performDetect(imagePath=image_path, thresh=self.confidence_threshold, configPath = self.darknet_configPath, weightPath = self.darknet_weightPath, metaPath= self.darknet_metaPath, showImage= False)
             except:
-                self.logger.exception("performDetect raised exception")
+                self.logger.error("performDetect raised exception", exc_info=True)
                 return 500, self.model_info, None, None
-
+ 
             # convert prediction
-            status, predictions, most_confident_class = self.__darknet_raw_prediction_to_json(raw_prediction, image_width, image_height)
+            try:
+                status, prediction_json, most_confident_class = self.__darknet_raw_prediction_to_json(raw_prediction, image_width, image_height)
+                
+                # if nothing detected
+                if(not status):
+                    most_confident_class = self.not_confiedent_name 
 
-            # if nothing detected
-            if(not status):
-                most_confident_class = self.not_confiedent_name           
+                self.logger.info("predictions: {0}".format(prediction_json))
+            except:
+                self.logger.error("prediction can not converted to json", exc_info=True)
+                return 520, self.model_info, None, None
 
-
-            # save-remove
-            predicted_image_path = None
-            if(image_action == "remove"):
-                os.remove(image_path)
-            elif(image_action == "save"):
-                predicted_image_path = image_operations.move_image_by_class_name(image_path, self.darknet_predictions_main_folder, most_confident_class)
-            else:
-                pass
+            # perform image action
+            try:
+                self.logger.info("performing chosen action to image ({0})".format(image_action))
+                predicted_image_path = None
+                if(image_action == "remove"):
+                    os.remove(image_path)
+                elif(image_action == "save"):
+                    predicted_image_path = image_operations.move_image_by_class_name(image_path, self.predictions_main_folder, most_confident_class)
+                else:
+                    pass
+            except:
+                self.logger.error("image action may not been performed", exc_info=True)
+                return 530, self.model_info, None, None
 
             # success
-            return 200, self.model_info, predictions, predicted_image_path
+            return 200, self.model_info, prediction_json, predicted_image_path
         else:
-            self.logger.warning("first init the darknet backend")
+            self.logger.error("backend for this predictor is not inited")
             return 550, self.model_info, None, None
 
 
-
-
+    # unified predict function
+    def predict_image(self, image_path, image_action = ""):
+        if(self.predictor_backend == "keras"):
+            return self.__predict_image_keras(image_path, image_action = image_action)
+        elif(self.predictor_backend == "darknet"):
+            return self.__predict_image_darknet(image_path, image_action = image_action)
+        else:
+            self.logger.error("predictor backend is not supported check your cfg file")
+            return 570, self.model_info, None, None
