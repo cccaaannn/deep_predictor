@@ -29,15 +29,13 @@ app = Flask(__name__)
 # set config options
 cfg = file_folder_operations.read_json_file(flask_cfg_path)
 
+app.config["DEBUG"] = True
+app.config['MAX_CONTENT_LENGTH'] = cfg["flask_options"]["MAX_CONTENT_LENGTH"]
+
 database_handler_cfg_path = cfg["flask_options"]["database_handler_cfg_path"]
 supported_extensions = cfg["flask_options"]["supported_extensions"]
 temp_save_path = cfg["flask_options"]["temp_save_path"]
 default_api_response = cfg["flask_options"]["default_api_response"]
-
-app.config["DEBUG"] = True
-app.config['MAX_CONTENT_LENGTH'] = cfg["flask_options"]["MAX_CONTENT_LENGTH"]
-# app.config['UPLOAD_EXTENSIONS'] = cfg["flask_options"]["UPLOAD_EXTENSIONS"]
-# app.config['UPLOAD_PATH'] = cfg["flask_options"]["UPLOAD_PATH"]
 
 
 
@@ -48,6 +46,7 @@ db = database_handler(database_handler_cfg_path)
 
 # create predictors
 from deep_predictor import deep_predictor
+# from predictor_dummy import predictor as deep_predictor
 predictors = {}
 for predictor in cfg["predictors"]:
     predictors.update({
@@ -67,6 +66,7 @@ def home():
 
 @app.route('/result', methods=['GET'])
 def result():
+    logger.info("function: {0} method: {1}".format("result", request.method))
     return redirect(url_for("home")), 308
 
 
@@ -150,9 +150,9 @@ def api():
 
         return prediction, 200
     else:
-        return prediction, 500
-    # try:
+        logger.warning("prediction_id is not provided")
+        return prediction, 400
 
 
-
-app.run()
+if __name__ == '__main__':
+    app.run()

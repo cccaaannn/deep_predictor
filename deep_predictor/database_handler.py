@@ -11,9 +11,12 @@ class database_handler():
     def __init__(self, database_cfg_path = "deep_predictor/cfg/database.cfg"):
         self.logger = logger_creator().database_handler_logger()
 
-        cfg = file_folder_operations.read_json_file(database_cfg_path)
-        self.database_path = cfg["database_options"]["database_path"]
-        
+        try:
+            cfg = file_folder_operations.read_json_file(database_cfg_path)
+            self.database_path = cfg["database_options"]["database_path"]
+        except:
+            self.logger.error("cfg file error", exc_info=True)
+
         self.check_connection()
         
 
@@ -36,9 +39,9 @@ class database_handler():
                 cursor.execute(query, (prediction_id, 100, '', '', '', 0, 0))
                 connection.commit()
         except sqlite3.IntegrityError:
-            self.logger.error("", exc_info=True)
+            self.logger.error("most likely you are trying to write douplicate of a unique field", exc_info=True)
         except:
-            self.logger.critical("", exc_info=True)
+            self.logger.error("", exc_info=True)
     
 
     def delete_prediction(self, prediction_id):
@@ -50,7 +53,7 @@ class database_handler():
                 cursor.execute(query, (prediction_id,))
                 connection.commit()
         except:
-            self.logger.critical("", exc_info=True)
+            self.logger.error("", exc_info=True)
 
 
     def update_successful_prediction(self, prediction_id, prediction, model_info, model_id, image_path):
@@ -71,7 +74,7 @@ class database_handler():
                 cursor.execute(query, (200, str(prediction), os.path.normpath(image_path), str(model_info), int(model_id), int(time.time()), prediction_id))
                 connection.commit()
         except:
-            self.logger.critical("", exc_info=True)
+            self.logger.error("", exc_info=True)
 
 
     def update_failed_prediction(self, prediction_id, prediction_status, model_info, model_id):
@@ -82,14 +85,14 @@ class database_handler():
                 query = """ UPDATE predictions SET 
                 prediction_status = ?,
                 model_info = ?,
-                model_id = ? 
+                model_id = ? , 
+                prediction_time = ? 
                 WHERE prediction_id = ?;"""
                 cursor = connection.cursor()   
-                cursor.execute(query, (prediction_status, str(model_info), model_id, prediction_id))
+                cursor.execute(query, (prediction_status, str(model_info), model_id, int(time.time()), prediction_id))
                 connection.commit()
         except:
-            self.logger.critical("", exc_info=True)
-
+            self.logger.error("", exc_info=True)
 
 
     def is_prediction_exists(self, prediction_id):
@@ -134,8 +137,9 @@ class database_handler():
                             "prediction_time" : prediction[0][7]
                             }
                 else:
-                    return  {"prediction_status" : prediction[0][2]}
+                    return {"prediction_status" : prediction[0][2]}
             else:
+                self.logger.warning("prediction_id does not exists {0}".format(prediction_id))
                 return {"prediction_status" : 0}
 
 

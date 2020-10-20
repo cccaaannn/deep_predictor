@@ -1,7 +1,7 @@
 import time
 
 class predictor():
-    def __init__(self, init=False):
+    def __init__(self, cfg_file, init=False):
         print("DUMMY PREDICTOR STARTED")
         self.is_inited = False
 
