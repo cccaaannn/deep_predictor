@@ -29,19 +29,23 @@ app = Flask(__name__)
 # set config options
 cfg = file_folder_operations.read_json_file(flask_cfg_path)
 
+default_api_response = cfg["flask_options"]["default_api_response"]
+
+temp_save_path = cfg["flask_options"]["temp_save_path"]
+database_path = cfg["flask_options"]["database_path"]
+
 app.config["DEBUG"] = True
 app.config['MAX_CONTENT_LENGTH'] = cfg["flask_options"]["MAX_CONTENT_LENGTH"]
-
-database_handler_cfg_path = cfg["flask_options"]["database_handler_cfg_path"]
 supported_extensions = cfg["flask_options"]["supported_extensions"]
-temp_save_path = cfg["flask_options"]["temp_save_path"]
-default_api_response = cfg["flask_options"]["default_api_response"]
+default_predictor_name = cfg["flask_options"]["default_predictor_name"]
+
+
 
 
 
 # create logger and db
 logger = logger_creator().flask_logger()
-db = database_handler(database_handler_cfg_path)
+db = database_handler(database_path)
 
 
 # create predictors
@@ -83,7 +87,10 @@ def upload_image():
 
 
         # check form elements
-        if(filename == "" or model_name == "" or prediction_id == ""):
+        if(model_name == ""):
+            model_name = default_predictor_name
+
+        if(filename == "" or prediction_id == ""):
             logger.warning("required form elements are empty")
             return render_template("upload.html", models=predictors.keys()), 400
 
@@ -122,7 +129,7 @@ def upload_image():
 
         # start prediction on thread
         pred_thread = prediction_thread(
-            database_handler_cfg_path, 
+            database_path, 
             unique_full_filename, 
             prediction_id, 
             predictor=predictors[model_name]
