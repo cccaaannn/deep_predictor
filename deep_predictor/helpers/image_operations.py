@@ -65,3 +65,17 @@ class image_operations():
             return None
 
         return new_array
+
+    @staticmethod
+    def load_image_tf_yolo(image_path, image_size):
+        """load, resize image for tf yolo prediction"""
+        try:
+            original_image = cv2.imread(image_path)
+            original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+
+            image_data = cv2.resize(original_image, (image_size, image_size))
+            image_data = image_data / 255.
+        except:
+            return None
+
+        return original_image, image_data

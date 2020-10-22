@@ -159,7 +159,7 @@ function fetch_api(){
             if(data.model_info.predictor_backend === "keras"){
                 on_success_keras(data);
             }
-            else if(data.model_info.predictor_backend === "darknet"){
+            else if(data.model_info.predictor_backend === "darknet" || data.model_info.predictor_backend === "tf_yolo"){
                 on_success_darknet(data);
             }
             else{
