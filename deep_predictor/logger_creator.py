@@ -1,27 +1,50 @@
 import logging
+import os
+
 from helpers.file_folder_operations import file_folder_operations
 
 class logger_creator():
 
-    def __init__(self, cfg_file_path = "deep_predictor/cfg/loggers.cfg"):
-        self.cfg_file_path = cfg_file_path
-        self.read_cfg_file()
+    def __init__(self, cfg_file_path = ""):
+        paths_to_check = ["deep_predictor/cfg/loggers.cfg", "cfg/loggers.cfg"]
+
+        if(cfg_file_path):
+            self.cfg_file_path = cfg_file_path
+            self.read_cfg_file()
+        else:
+            for path in paths_to_check:
+                try:
+                    self.cfg_file_path = path
+                    self.read_cfg_file()
+                    break
+                except:
+                    pass
+            else:
+                raise ValueError("logger creator cfg file does not exists on default paths")
+        
+        # fix root path problem
+        root_path = "deep_predictor"
+        for logger_file in self.cfg["logger_files"]:
+            if(self.cfg["logger_files"][logger_file]):
+                if(not os.path.isfile(self.cfg["logger_files"][logger_file])):
+                    self.cfg["logger_files"].update( { logger_file : os.path.join(root_path, self.cfg["logger_files"][logger_file]) } )
+
 
     
     def read_cfg_file(self):
         self.cfg = file_folder_operations.read_json_file(self.cfg_file_path)
 
     def flask_logger(self):
-        return self.create_logger(self.cfg["flask_logger"]["logger_name"], self.cfg["flask_logger"]["log_file"], self.cfg["flask_logger"]["log_level"])
+        return self.create_logger(self.cfg["logger_names"]["flask"], self.cfg["logger_files"]["flask"], self.cfg["logger_levels"]["flask"])
 
     def prediction_thread_logger(self):
-        return self.create_logger(self.cfg["prediction_thread_logger"]["logger_name"], self.cfg["prediction_thread_logger"]["log_file"], self.cfg["prediction_thread_logger"]["log_level"])
+        return self.create_logger(self.cfg["logger_names"]["prediction_thread"], self.cfg["logger_files"]["prediction_thread"], self.cfg["logger_levels"]["prediction_thread"])
 
     def database_handler_logger(self):
-        return self.create_logger(self.cfg["database_handler_logger"]["logger_name"], self.cfg["database_handler_logger"]["log_file"], self.cfg["database_handler_logger"]["log_level"])
+        return self.create_logger(self.cfg["logger_names"]["database_handler"], self.cfg["logger_files"]["database_handler"], self.cfg["logger_levels"]["database_handler"])
     
     def deep_predictor_logger(self):
-        return self.create_logger(self.cfg["predictor_logger"]["logger_name"], self.cfg["predictor_logger"]["log_file"], self.cfg["predictor_logger"]["log_level"])
+        return self.create_logger(self.cfg["logger_names"]["predictor"], self.cfg["logger_files"]["predictor"], self.cfg["logger_levels"]["predictor"])
 
 
     def create_logger(self, logger_name, log_file, log_level):

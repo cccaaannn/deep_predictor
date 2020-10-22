@@ -8,25 +8,18 @@ from helpers.file_folder_operations import file_folder_operations
 
 
 class database_handler():
-    def __init__(self, database_cfg_path = "deep_predictor/cfg/database.cfg"):
+    def __init__(self, database_path = "database/database.db"):
         self.logger = logger_creator().database_handler_logger()
-
-        try:
-            cfg = file_folder_operations.read_json_file(database_cfg_path)
-            self.database_path = cfg["database_options"]["database_path"]
-        except:
-            self.logger.error("cfg file error", exc_info=True)
-
+        self.database_path = database_path
         self.check_connection()
-        
 
     def check_connection(self):
         """checks connection to db"""
         try:
             with sqlite3.connect(self.database_path) as _:
-                self.logger.info("db connected")
+                self.logger.info("db connected on path {0}".format(self.database_path))
         except:
-            self.logger.critical("can not connect to database", exc_info=True)
+            self.logger.critical("can not connect to database on path {0}".format(self.database_path), exc_info=True)
 
 
     def create_prediction(self, prediction_id):
@@ -141,5 +134,4 @@ class database_handler():
             else:
                 self.logger.warning("prediction_id does not exists {0}".format(prediction_id))
                 return {"prediction_status" : 0}
-
 

@@ -3,9 +3,9 @@ from database_handler import database_handler
 from logger_creator import logger_creator
 
 class prediction_thread(threading.Thread):
-    def __init__(self, database_handler_cfg_path, temp_image_path, prediction_id, predictor):
+    def __init__(self, database_path, temp_image_path, prediction_id, predictor):
         super().__init__()
-        self.db = database_handler(database_handler_cfg_path)
+        self.db = database_handler(database_path)
         self.logger = logger_creator().prediction_thread_logger()
         self.predictor = predictor
         self.prediction_id = prediction_id
