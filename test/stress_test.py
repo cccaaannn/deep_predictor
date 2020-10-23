@@ -43,8 +43,14 @@ if __name__ == "__main__":
     id_prefix = "TEST" 
     id_size = 12
     url = 'http://127.0.0.1:5000/upload'
-    test_image_folder = "test_images/images_from_darknet_repo"
-    model_names = ["darknet coco"]
+    test_image_folder = "test_images/other"
+    model_names = [    
+    "food 10 vgg16", 
+    "food 10 vgg16 2", 
+    "food 10 densenet", 
+    "tf_yolov4 ingredient", 
+    "tf_yolov4 coco"
+    ]
     
     workers = 10
     request_count = 10
