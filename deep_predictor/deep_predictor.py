@@ -35,49 +35,51 @@ class deep_predictor():
         try:
             cfg = file_folder_operations.read_json_file(cfg_path)
             
-            # common model info
+            # model info
+            self.model_info = cfg["predictor_options"]["model_info"]            
             self.predictor_backend = cfg["predictor_options"]["model_info"]["predictor_backend"]
-            self.model_info = cfg["predictor_options"]["model_info"]
             self.method = cfg["predictor_options"]["model_info"]["method"]
             _ = cfg["predictor_options"]["model_info"]["model_id"]
+            
+            # common model_options
+            self.predicted_image_action = cfg["predictor_options"]["model_options"]["predicted_image_action"]
 
-            # common paths
-            self.predictions_main_folder = cfg["predictor_options"]["paths"]["predictions_main_folder"] 
-            self.not_confiedent_name = cfg["predictor_options"]["paths"]["not_confiedent_folder_name"] 
-
-
+            # common model_paths
+            self.predictions_main_folder = cfg["predictor_options"]["model_paths"]["predictions_main_folder"] 
+            self.not_confiedent_name = cfg["predictor_options"]["model_paths"]["not_confiedent_folder_name"] 
+ 
             if(self.predictor_backend == "keras"):
-                # backend specific info
-                self.confidence_threshold = cfg["predictor_options"]["model_info"]["confidence_threshold"]
-                self.keras_image_size = (cfg["predictor_options"]["model_info"]["image_w"], cfg["predictor_options"]["model_info"]["image_h"])
-                self.keras_grayscale = cfg["predictor_options"]["model_info"]["grayscale"]
-                self.keras_topN = cfg["predictor_options"]["model_info"]["return_topN"]
+                # model_options
+                self.confidence_threshold = cfg["predictor_options"]["model_options"]["confidence_threshold"]
+                self.keras_image_size = (cfg["predictor_options"]["model_options"]["image_w"], cfg["predictor_options"]["model_options"]["image_h"])
+                self.keras_grayscale = cfg["predictor_options"]["model_options"]["grayscale"]
+                self.keras_topN = cfg["predictor_options"]["model_options"]["return_topN"]
 
                 # graph for tf 1 session
-                self.tensorflow_version = cfg["predictor_options"]["model_info"]["tensorflow_version"]
+                self.tensorflow_version = cfg["predictor_options"]["model_options"]["tensorflow_version"]
                 if(self.tensorflow_version == 1):
                     self.tf_graph = tf.get_default_graph()
 
-                # backend specific paths
-                self.keras_model_path = cfg["predictor_options"]["paths"]["model_path"]
-                self.keras_names_path = cfg["predictor_options"]["paths"]["names_path"]
+                # backend specific model_paths
+                self.keras_model_path = cfg["predictor_options"]["model_paths"]["model_path"]
+                self.keras_names_path = cfg["predictor_options"]["model_paths"]["names_path"]
             
             elif(self.predictor_backend == "tf_yolo"):
-                # backend specific info
-                self.tf_yolo_image_size = cfg["predictor_options"]["model_info"]["input_size"]
-                self.iou_threshold = cfg["predictor_options"]["model_info"]["iou_threshold"]
-                self.score_threshold = cfg["predictor_options"]["model_info"]["score_threshold"]
-                # backend specific paths
-                self.tf_yolo_model_path = cfg["predictor_options"]["paths"]["model_path"]
-                self.tf_yolo_names_path = cfg["predictor_options"]["paths"]["names_path"]
+                # model_options
+                self.tf_yolo_image_size = cfg["predictor_options"]["model_options"]["input_size"]
+                self.iou_threshold = cfg["predictor_options"]["model_options"]["iou_threshold"]
+                self.score_threshold = cfg["predictor_options"]["model_options"]["score_threshold"]
+                # backend specific model_paths
+                self.tf_yolo_model_path = cfg["predictor_options"]["model_paths"]["model_path"]
+                self.tf_yolo_names_path = cfg["predictor_options"]["model_paths"]["names_path"]
 
             elif(self.predictor_backend == "darknet"):
-                # backend specific info                
-                self.confidence_threshold = cfg["predictor_options"]["model_info"]["confidence_threshold"]
-                # backend specific paths
-                self.darknet_configPath = cfg["predictor_options"]["paths"]["darknet_configPath"]
-                self.darknet_weightPath = cfg["predictor_options"]["paths"]["darknet_weightPath"]
-                self.darknet_metaPath = cfg["predictor_options"]["paths"]["darknet_metaPath"]
+                # model_options               
+                self.confidence_threshold = cfg["predictor_options"]["model_options"]["confidence_threshold"]
+                # backend specific model_paths
+                self.darknet_configPath = cfg["predictor_options"]["model_paths"]["darknet_configPath"]
+                self.darknet_weightPath = cfg["predictor_options"]["model_paths"]["darknet_weightPath"]
+                self.darknet_metaPath = cfg["predictor_options"]["model_paths"]["darknet_metaPath"]
 
             else:
                 self.logger.error("cfg file error, predictor backend is not supported")
@@ -165,7 +167,7 @@ class deep_predictor():
             # perform image action
             try:
                 self.logger.info("performing chosen action to image ({0})".format(image_action))
-                predicted_image_path = None
+                predicted_image_path = ""
                 if(image_action == "remove"):
                     os.remove(image_path)
                 elif(image_action == "save"):
@@ -270,7 +272,7 @@ class deep_predictor():
             # perform image action
             try:
                 self.logger.info("performing chosen action to image ({0})".format(image_action))
-                predicted_image_path = None
+                predicted_image_path = ""
                 if(image_action == "remove"):
                     os.remove(image_path)
                 elif(image_action == "save"):
@@ -379,7 +381,7 @@ class deep_predictor():
             # perform image action
             try:
                 self.logger.info("performing chosen action to image ({0})".format(image_action))
-                predicted_image_path = None
+                predicted_image_path = ""
                 if(image_action == "remove"):
                     os.remove(image_path)
                 elif(image_action == "save"):
@@ -411,13 +413,13 @@ class deep_predictor():
             if(self.__init_darknet()):
                 self.is_inited = True
 
-    def predict_image(self, image_path, image_action = ""):
+    def predict_image(self, image_path):
         if(self.predictor_backend == "keras"):
-            return self.__predict_image_keras(image_path, image_action = image_action)
+            return self.__predict_image_keras(image_path, image_action = self.predicted_image_action)
         elif(self.predictor_backend == "tf_yolo"):
-            return self.__predict_image_tf_yolo(image_path, image_action = image_action)      
+            return self.__predict_image_tf_yolo(image_path, image_action = self.predicted_image_action)      
         elif(self.predictor_backend == "darknet"):
-            return self.__predict_image_darknet(image_path, image_action = image_action)
+            return self.__predict_image_darknet(image_path, image_action = self.predicted_image_action)
         else:
             self.logger.error("predictor backend is not supported check your cfg file")
             return 570, self.model_info, None, None

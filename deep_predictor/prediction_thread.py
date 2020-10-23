@@ -14,7 +14,7 @@ class prediction_thread(threading.Thread):
     def run(self):
         self.logger.info("prediction started on thread")
 
-        status, model_info, prediction, image_path = self.predictor.predict_image(self.temp_image_path, image_action = "save")
+        status, model_info, prediction, image_path = self.predictor.predict_image(self.temp_image_path)
 
         # save results to db
         if(status == 200):
