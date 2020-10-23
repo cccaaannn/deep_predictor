@@ -1,6 +1,6 @@
 import json
+import pathlib
 import os
-
 
 class file_folder_operations():
     @staticmethod
@@ -22,9 +22,11 @@ class file_folder_operations():
 
     @staticmethod
     def create_dir_if_not_exists(path):
-        if(not os.path.exists(path)):
-            os.makedirs(path)
-            
+        """pathlib is not raises exception if path exists"""
+        pathlib.Path(path).mkdir(parents=True, exist_ok=True) 
+        # if(not os.path.exists(path)):
+        #     os.makedirs(path, exist_ok=True)
+
     @staticmethod
     def create_unique_file_name(file_path, before_number="(", after_number=")"):
         """creates a unique image name for saving"""
@@ -44,7 +46,7 @@ class file_folder_operations():
                     break
 
         return file_path
-    
+
     @staticmethod
     def read_class_names_tf_yolo(class_file_name):
         names = {}
