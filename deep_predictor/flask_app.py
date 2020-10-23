@@ -11,6 +11,8 @@ import os
 from logger_creator import logger_creator
 from database_handler import database_handler
 from prediction_thread import prediction_thread
+from deep_predictor import deep_predictor
+# from predictor_dummy import predictor as deep_predictor
 
 # helpers
 from helpers.file_folder_operations import file_folder_operations
@@ -18,29 +20,33 @@ from helpers.image_operations import image_operations
 
 
 
-
-# cfg path
-flask_cfg_path = "deep_predictor/cfg/flask.cfg"
-
-
-# create app
-app = Flask(__name__)
-
 # set config options
+flask_cfg_path = "deep_predictor/cfg/flask.cfg"
 cfg = file_folder_operations.read_json_file(flask_cfg_path)
 
-default_api_response = cfg["flask_options"]["default_api_response"]
 
-temp_save_path = cfg["flask_options"]["temp_save_path"]
-database_path = cfg["flask_options"]["database_path"]
+# upload options
+max_content_length = cfg["flask_options"]["upload_options"]["max_content_length"]
+supported_extensions = cfg["flask_options"]["upload_options"]["supported_extensions"]
 
-app.config["DEBUG"] = True
-app.config['MAX_CONTENT_LENGTH'] = cfg["flask_options"]["MAX_CONTENT_LENGTH"]
-supported_extensions = cfg["flask_options"]["supported_extensions"]
-default_predictor_name = cfg["flask_options"]["default_predictor_name"]
+# api options
+default_api_response = cfg["flask_options"]["api_options"]["default_api_response"]
+get_prediction_endpoint = cfg["flask_options"]["api_options"]["get_prediction_endpoint"]
+get_predictors_endpoint = cfg["flask_options"]["api_options"]["get_predictors_endpoint"]
 
+# path options
+temp_save_path = cfg["flask_options"]["path_options"]["temp_save_path"]
+database_path = cfg["flask_options"]["path_options"]["database_path"]
 
+# prediction options
+default_predictor_name = cfg["flask_options"]["prediction_options"]["default_predictor_name"]
 
+# create predictors
+predictors = {}
+for predictor in cfg["flask_options"]["prediction_options"]["predictors"]:
+    predictors.update({
+        predictor : deep_predictor(cfg["flask_options"]["prediction_options"]["predictors"][predictor], init=True)
+    })
 
 
 # create logger and db
@@ -48,17 +54,14 @@ logger = logger_creator().flask_logger()
 db = database_handler(database_path)
 
 
-# create predictors
-from deep_predictor import deep_predictor
-# from predictor_dummy import predictor as deep_predictor
-predictors = {}
-for predictor in cfg["predictors"]:
-    predictors.update({
-        predictor : deep_predictor(cfg["predictors"][predictor], init=True)
-    })
 
 
 
+
+# create app
+app = Flask(__name__)
+app.config["DEBUG"] = True
+app.config['MAX_CONTENT_LENGTH'] = max_content_length
 
 
 
@@ -119,10 +122,10 @@ def upload_image():
 
 
         # check image resizability
-        if(not image_operations.validate_image(unique_full_filename, delete = True)):
+        status, unique_full_filename = image_operations.validate_image(unique_full_filename, try_to_convert = True, delete = True)
+        if(not status):
             logger.warning("image is not supported")
             abort(400, description="image is not supported")
-
 
         # prepare preediction
         db.create_prediction(prediction_id)
@@ -147,18 +150,19 @@ def api():
     logger.info("function: {0} method: {1}".format("api", request.method))
 
     # get args
-    query_parameters = request.args
-    prediction_id = query_parameters.get('prediction_id')
-
-    prediction = default_api_response
+    arguments = request.args
+    prediction_id = arguments.get(get_prediction_endpoint)
 
     if(prediction_id):
         prediction = db.get_prediction_json(prediction_id)
-
         return prediction, 200
+
+    elif(get_predictors_endpoint in arguments):
+        return {get_predictors_endpoint : list(predictors.keys())}, 200
+
     else:
         logger.warning("prediction_id is not provided")
-        return prediction, 400
+        return default_api_response, 400
 
 
 if __name__ == '__main__':

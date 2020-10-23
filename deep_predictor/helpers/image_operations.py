@@ -1,5 +1,6 @@
 import os
 import cv2
+from PIL import Image
 
 import sys
 sys.path.insert(0, 'deep_predictor')
@@ -17,15 +18,57 @@ class image_operations():
             return 1
     
     @staticmethod
-    def validate_image(image_path, delete = True):
+    def validate_image(image_path, try_to_convert = True, delete = True):
+        """validates image by trying to resize it with opencv, if selected tries to convert unresizable image to jpg ant tres to resize again"""
+        is_image_ok = image_operations.try_to_resize_image(image_path)
+        if(not is_image_ok and try_to_convert):
+            # try to convert to jpg with pillow
+            is_image_ok, image_path = image_operations.convert_to_jpg(image_path)
+            # try resizing again
+            if(is_image_ok):
+                is_image_ok = image_operations.try_to_resize_image(image_path) 
+
+            # if(not is_image_ok):
+            #     # try to convert to jpg with ...
+            #     is_image_ok, image_path = image_operations.convert_to_jpg(image_path)
+            #     # try resizing again
+            #     if(is_image_ok):
+            #         is_image_ok = image_operations.try_to_resize_image(image_path) 
+
+
+        if(is_image_ok):
+            return 1, image_path
+        else:
+            if(delete):
+                os.remove(image_path)
+            return 0, image_path
+
+    @staticmethod
+    def try_to_resize_image(image_path):
         try:
             temp_array = cv2.imread(image_path) 
             _ = cv2.resize(temp_array, (224, 224)) 
             return 1
         except:
-            if(delete):
-                os.remove(image_path)
             return 0
+
+    @staticmethod
+    def convert_to_jpg(image_path):
+        try:
+            # create new path name
+            file_name, _ = os.path.splitext(image_path)
+            new_path = file_name + ".jpg"
+            
+            # convert image
+            im = Image.open(image_path).convert('RGB')
+            im.save(new_path)
+
+            # remove old extension image
+            os.remove(image_path)
+            return 1, new_path
+        except Exception as e:
+            print(e)
+            return 0, image_path
 
     @staticmethod
     def move_image_by_class_name(temp_image_path, main_save_folder, image_class):
