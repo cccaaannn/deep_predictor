@@ -6,7 +6,7 @@ import time
 import cv2
 import numpy as np
 
-from model_files.darknet_files import darknet
+from model_files.darknet_files import darknet_modified
 
 
 def parser():
