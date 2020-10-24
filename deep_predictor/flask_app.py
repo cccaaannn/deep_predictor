@@ -12,7 +12,6 @@ from logger_creator import logger_creator
 from database_handler import database_handler
 from prediction_thread import prediction_thread
 from deep_predictor import deep_predictor
-# from predictor_dummy import predictor as deep_predictor
 
 # helpers
 from helpers.file_folder_operations import file_folder_operations
@@ -45,7 +44,7 @@ default_predictor_name = cfg["flask_options"]["prediction_options"]["default_pre
 predictors = {}
 for predictor in cfg["flask_options"]["prediction_options"]["predictors"]:
     predictors.update({
-        predictor : deep_predictor(cfg["flask_options"]["prediction_options"]["predictors"][predictor], init=True)
+        predictor : deep_predictor(cfg["flask_options"]["prediction_options"]["predictors"][predictor])
     })
 
 
