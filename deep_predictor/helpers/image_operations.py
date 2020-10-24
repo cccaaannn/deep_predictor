@@ -1,16 +1,20 @@
 import os
 import cv2
+import shutil
 from PIL import Image
 
-import sys
-sys.path.insert(0, 'deep_predictor')
-
-
-from helpers.file_folder_operations import file_folder_operations
+# fixing import problems caused by root path
+try:
+    from file_folder_operations import file_folder_operations
+except:
+    import sys
+    sys.path.insert(0, 'deep_predictor')
+    from helpers.file_folder_operations import file_folder_operations
 
 class image_operations():
     @staticmethod
     def validate_extension(possible_extensions, image_name):
+        """validates extension"""
         _ , ext = os.path.splitext(image_name)
         if(ext not in possible_extensions):
             return 0
@@ -19,7 +23,7 @@ class image_operations():
     
     @staticmethod
     def validate_image(image_path, try_to_convert = True, delete = True):
-        """validates image by trying to resize it with opencv, if selected tries to convert unresizable image to jpg ant tres to resize again"""
+        """validates image by trying to resize it with opencv, if selected tries to convert unresizable image to jpg and tres to resize again"""
         is_image_ok = image_operations.try_to_resize_image(image_path)
         if(not is_image_ok and try_to_convert):
             # try to convert to jpg with pillow
@@ -45,6 +49,7 @@ class image_operations():
 
     @staticmethod
     def try_to_resize_image(image_path):
+        """tries to resize image with opencv"""
         try:
             temp_array = cv2.imread(image_path) 
             _ = cv2.resize(temp_array, (224, 224)) 
@@ -54,6 +59,7 @@ class image_operations():
 
     @staticmethod
     def convert_to_jpg(image_path):
+        """tries to convert the image to jpg with pillow"""
         try:
             # create new path name
             file_name, _ = os.path.splitext(image_path)
@@ -83,7 +89,7 @@ class image_operations():
         file_folder_operations.create_dir_if_not_exists(predicted_image_class_path)
 
         # move image from temp to predictions
-        os.rename(temp_image_path, predicted_image_path)
+        shutil.move(temp_image_path, predicted_image_path)
         
         return predicted_image_path
 
