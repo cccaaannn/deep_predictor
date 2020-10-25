@@ -22,22 +22,13 @@ class predictor_dummy():
     def __set_options(self, cfg_path):
         try:
             cfg = file_folder_operations.read_json_file(cfg_path)
-            
-            # model info
-            self.model_info = cfg["predictor_options"]["model_info"]            
-            self.predictor_backend = cfg["predictor_options"]["model_info"]["predictor_backend"]
-            self.method = cfg["predictor_options"]["model_info"]["method"]
-            _ = cfg["predictor_options"]["model_info"]["model_id"]
-
-            # common model_paths
-            self.predictions_main_folder = cfg["predictor_options"]["model_paths"]["predictions_main_folder"] 
-
             # model_options
             self.simulate = cfg["predictor_options"]["model_options"]["simulate"]
             self.image_class = cfg["predictor_options"]["model_options"]["image_class"]
             self.sleep = cfg["predictor_options"]["model_options"]["sleep"]
             self.predicted_image_action = cfg["predictor_options"]["model_options"]["predicted_image_action"]
-        
+            # model_paths
+            self.predictions_main_folder = cfg["predictor_options"]["model_paths"]["predictions_main_folder"] 
             return True
         except:
             self.logger.error("cfg file error", exc_info=True)
@@ -55,13 +46,7 @@ class predictor_dummy():
             # perform image action
             try:
                 self.logger.info("performing chosen action to image ({0})".format(self.predicted_image_action))
-                predicted_image_path = ""
-                if(self.predicted_image_action == "remove"):
-                    os.remove(image_path)
-                elif(self.predicted_image_action == "save"):
-                    predicted_image_path = image_operations.move_image_by_class_name(image_path, self.predictions_main_folder, self.image_class)
-                else:
-                    pass
+                predicted_image_path = image_operations.perform_image_action(image_path, self.predictions_main_folder, self.image_class, self.predicted_image_action)
             except:
                 self.logger.error("image action may not been performed", exc_info=True)
                 return 530, None, None

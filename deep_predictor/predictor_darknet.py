@@ -24,23 +24,12 @@ class predictor_darknet():
     def __set_options(self, cfg_path):
         try:
             cfg = file_folder_operations.read_json_file(cfg_path)
-            
-            # model info
-            self.model_info = cfg["predictor_options"]["model_info"]            
-            self.predictor_backend = cfg["predictor_options"]["model_info"]["predictor_backend"]
-            self.method = cfg["predictor_options"]["model_info"]["method"]
-            _ = cfg["predictor_options"]["model_info"]["model_id"]
-            
-            # common model_options
-            self.predicted_image_action = cfg["predictor_options"]["model_options"]["predicted_image_action"]
-
-            # common model_paths
+            # model_options          
+            self.predicted_image_action = cfg["predictor_options"]["model_options"]["predicted_image_action"]     
+            self.confidence_threshold = cfg["predictor_options"]["model_options"]["confidence_threshold"]
+            # model_paths
             self.predictions_main_folder = cfg["predictor_options"]["model_paths"]["predictions_main_folder"] 
             self.not_confiedent_name = cfg["predictor_options"]["model_paths"]["not_confiedent_folder_name"] 
-
-            # model_options               
-            self.confidence_threshold = cfg["predictor_options"]["model_options"]["confidence_threshold"]
-            # backend specific model_paths
             self.darknet_configPath = cfg["predictor_options"]["model_paths"]["darknet_configPath"]
             self.darknet_weightPath = cfg["predictor_options"]["model_paths"]["darknet_weightPath"]
             self.darknet_metaPath = cfg["predictor_options"]["model_paths"]["darknet_metaPath"]
@@ -102,32 +91,26 @@ class predictor_darknet():
                     most_confident_score = float(element[1])
                     most_confident_class = element[0]
 
-            return True, predictions, most_confident_class
-        
+            return predictions, most_confident_class
+
         else:
-            return False, predictions, most_confident_class
+            # if nothing detected
+            return predictions, self.not_confiedent_name 
 
     def predict_image(self, image_path):
         # prediction 
         try:
             # raw_prediction, image_width, image_height = performDetect(imagePath=image_path, thresh=self.confidence_threshold, configPath = self.darknet_configPath, weightPath = self.darknet_weightPath, metaPath= self.darknet_metaPath, showImage= False)
-
             self.darknet_network, self.darknet_class_names, self.darknet_class_colors = load_network(self.darknet_configPath, self.darknet_metaPath, self.darknet_weightPath, batch_size=1)
             raw_prediction, image_width, image_height = image_detection(image_path, self.darknet_network, self.darknet_class_names, self.darknet_class_colors, self.confidence_threshold)
             free_network_ptr(self.darknet_network)
-
         except:
             self.logger.error("performDetect raised exception", exc_info=True)
             return 500, None, None
 
         # convert prediction to json
         try:
-            status, prediction_json, most_confident_class = self.__raw_prediction_to_json(raw_prediction, image_width, image_height)
-            
-            # if nothing detected
-            if(not status):
-                most_confident_class = self.not_confiedent_name 
-
+            prediction_json, most_confident_class = self.__raw_prediction_to_json(raw_prediction, image_width, image_height)
             self.logger.info("predictions: {0}".format(prediction_json))
         except:
             self.logger.error("prediction can not converted to json", exc_info=True)
@@ -136,13 +119,7 @@ class predictor_darknet():
         # perform image action
         try:
             self.logger.info("performing chosen action to image ({0})".format(self.predicted_image_action))
-            predicted_image_path = ""
-            if(self.predicted_image_action == "remove"):
-                os.remove(image_path)
-            elif(self.predicted_image_action == "save"):
-                predicted_image_path = image_operations.move_image_by_class_name(image_path, self.predictions_main_folder, most_confident_class)
-            else:
-                pass
+            predicted_image_path = image_operations.perform_image_action(image_path, self.predictions_main_folder, most_confident_class, self.predicted_image_action)
         except:
             self.logger.error("image action may not been performed", exc_info=True)
             return 530, None, None

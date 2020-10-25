@@ -1,15 +1,16 @@
 import os
 import cv2
 import shutil
+import pathlib
 from PIL import Image
 
 # fixing import problems caused by root path
-try:
-    from file_folder_operations import file_folder_operations
-except:
-    import sys
-    sys.path.insert(0, 'deep_predictor')
-    from helpers.file_folder_operations import file_folder_operations
+# try:
+#     from file_folder_operations import file_folder_operations
+# except:
+#     import sys
+#     sys.path.insert(0, 'deep_predictor')
+#     from helpers.file_folder_operations import file_folder_operations
 
 class image_operations():
     @staticmethod
@@ -83,14 +84,26 @@ class image_operations():
         # prepare new image name for predictions directory
         _ , temp_image_name = os.path.split(temp_image_path)
         predicted_image_class_path = os.path.join(main_save_folder, image_class)
-        predicted_image_path = file_folder_operations.create_unique_file_name(os.path.join(predicted_image_class_path, temp_image_name))
+        predicted_image_path = os.path.join(predicted_image_class_path, temp_image_name)
 
         # create class file if not exists
-        file_folder_operations.create_dir_if_not_exists(predicted_image_class_path)
+        pathlib.Path(predicted_image_class_path).mkdir(parents=True, exist_ok=True) 
 
         # move image from temp to predictions
         shutil.move(temp_image_path, predicted_image_path)
         
+        return predicted_image_path
+
+    @staticmethod
+    def perform_image_action(image_path, main_save_folder, image_class, image_action):
+        """saves or removes image by given action RETURNS EMPTY STR IF ACTION IS NOT SPECIFIED"""
+        predicted_image_path = ""
+        if(image_action == "remove"):
+            os.remove(image_path)
+        elif(image_action == "save"):
+            predicted_image_path = image_operations.move_image_by_class_name(image_path, main_save_folder, image_class)
+        else:
+            pass
         return predicted_image_path
 
     @staticmethod

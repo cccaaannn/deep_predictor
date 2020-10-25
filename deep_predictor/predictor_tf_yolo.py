@@ -22,25 +22,16 @@ class predictor_tf_yolo():
     def __set_options(self, cfg_path):
         try:
             cfg = file_folder_operations.read_json_file(cfg_path)
-            
-            # model info
-            self.model_info = cfg["predictor_options"]["model_info"]            
-            self.predictor_backend = cfg["predictor_options"]["model_info"]["predictor_backend"]
-            self.method = cfg["predictor_options"]["model_info"]["method"]
-            _ = cfg["predictor_options"]["model_info"]["model_id"]
-            
-            # common model_options
-            self.predicted_image_action = cfg["predictor_options"]["model_options"]["predicted_image_action"]
-
-            # common model_paths
-            self.predictions_main_folder = cfg["predictor_options"]["model_paths"]["predictions_main_folder"] 
-            self.not_confiedent_name = cfg["predictor_options"]["model_paths"]["not_confiedent_folder_name"] 
 
             # model_options
+            self.predicted_image_action = cfg["predictor_options"]["model_options"]["predicted_image_action"]            
             self.tf_yolo_image_size = cfg["predictor_options"]["model_options"]["input_size"]
             self.iou_threshold = cfg["predictor_options"]["model_options"]["iou_threshold"]
             self.score_threshold = cfg["predictor_options"]["model_options"]["score_threshold"]
-            # backend specific model_paths
+
+            # model_paths
+            self.predictions_main_folder = cfg["predictor_options"]["model_paths"]["predictions_main_folder"] 
+            self.not_confiedent_name = cfg["predictor_options"]["model_paths"]["not_confiedent_folder_name"] 
             self.tf_yolo_model_path = cfg["predictor_options"]["model_paths"]["model_path"]
             self.tf_yolo_names_path = cfg["predictor_options"]["model_paths"]["names_path"]
 
@@ -95,13 +86,13 @@ class predictor_tf_yolo():
                     most_confident_score = float(element[1])
                     most_confident_class = element[0]
 
-            return True, predictions, most_confident_class
-        
+            return predictions, most_confident_class
+
         else:
-            return False, predictions, most_confident_class
+            # if nothing detected
+            return predictions, self.not_confiedent_name 
 
     def predict_image(self, image_path):
-
         # load and check the image
         image, image_data = image_operations.load_image_tf_yolo(image_path, self.tf_yolo_image_size)
         if(not isinstance(image, np.ndarray)):
@@ -117,12 +108,7 @@ class predictor_tf_yolo():
 
         # convert prediction to json
         try:
-            status, prediction_json, most_confident_class = self.__raw_prediction_to_json(raw_prediction)
-
-            # if nothing detected
-            if(not status):
-                most_confident_class = self.not_confiedent_name 
-
+            prediction_json, most_confident_class = self.__raw_prediction_to_json(raw_prediction)
             self.logger.info("predictions: {0}".format(prediction_json))
         except:
             self.logger.error("prediction can not converted to json", exc_info=True)
@@ -131,13 +117,7 @@ class predictor_tf_yolo():
         # perform image action
         try:
             self.logger.info("performing chosen action to image ({0})".format(self.predicted_image_action))
-            predicted_image_path = ""
-            if(self.predicted_image_action == "remove"):
-                os.remove(image_path)
-            elif(self.predicted_image_action == "save"):
-                predicted_image_path = image_operations.move_image_by_class_name(image_path, self.predictions_main_folder, most_confident_class)
-            else:
-                pass
+            predicted_image_path = image_operations.perform_image_action(image_path, self.predictions_main_folder, most_confident_class, self.predicted_image_action)
         except:
             self.logger.error("image action may not been performed", exc_info=True)
             return 530, None, None
