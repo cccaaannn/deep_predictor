@@ -5,10 +5,14 @@ const result_div = document.getElementById('result_div');
 
 
 function on_success_keras(data){
-    header_div.innerHTML = `<h1 class="display-4">Prediction results</h1>`;
-    animate_bar_charts(data);
+    if(data.predictions.length < 1){
+        header_div.innerHTML = `<h1 class="display-4">Nothing detected</h1>`;
+    }
+    else{
+        header_div.innerHTML = `<h1 class="display-4">Prediction results</h1>`;
+        animate_bar_charts(data);
+    }
 }
-
 
 function on_success_darknet(data){
     if(data.predictions.length < 1){
@@ -16,15 +20,15 @@ function on_success_darknet(data){
     }
     else{
         header_div.innerHTML = `<h1 class="display-4">Prediction results</h1>`;
-        let predictions = data.predictions;
-        for (let index = 0; index < predictions.length; index++) {
-            result_div.innerHTML += `
-            <h2>${predictions[index].class_name}  (% ${predictions[index].confidence})</h2>
-            `
-        }
+        // let predictions = data.predictions;
+        // for (let index = 0; index < predictions.length; index++) {
+        //     result_div.innerHTML += `
+        //     <h2>${predictions[index].class_name}  (% ${predictions[index].confidence})</h2>
+        //     `
+        // }
+        animate_bar_charts(data);
     }
 }
-
 
 function on_error(){
     const error_html = `
@@ -35,110 +39,94 @@ function on_error(){
 
 
 
+
+
 function animate_bar_charts(data){
-    /*animates charts                   because why not */
+    /*animates charts->                   because why not */
 
-    let is_confident = "";
-    if(data.predictions.is_confident === 1){
-        is_confident = "confident";
+    colors = ["", "bg-warning", "bg-danger"]
+    let confidences = [];
+    let class_names = [];
+    let vals = [];
+    let increments = [];
+    for (let index = 0; index < data.predictions.length; index++) {
+        confidences.push(Number.parseFloat(data.predictions[index].confidence*100).toPrecision(4));
+        class_names.push(data.predictions[index].class_name)
+        vals.push(0);
+        increments.push(confidences[index] / 100);
     }
-    else{
-        is_confident = "not confident";
-    }
-
-    const confidence1 = Number.parseFloat(data.predictions["1"].confidence*100).toPrecision(4);
-    const confidence2 = Number.parseFloat(data.predictions["2"].confidence*100).toPrecision(4);
-    const confidence3 = Number.parseFloat(data.predictions["3"].confidence*100).toPrecision(4);
-
-    let val1 = 0;
-    let val2 = 0;
-    let val3 = 0;
-
-    const increment1 = confidence1 / 100;
-    const increment2 = confidence2 / 100;
-    const increment3 = confidence3 / 100;
-
 
     for (let i = 0; i < 100; i++) {
         setTimeout(function() {
-            result_div.innerHTML = `
-                <h2>${data.predictions["1"].class_name} (${is_confident})</h2>
-                <div class="progress">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:${Number.parseFloat(val1).toPrecision(4)}%">
-                        <div class="chart_text"> 
-                            ${Number.parseFloat(val1).toPrecision(4)}%
-                        </div>
-                    </div>
-                </div>
-            `
+            result_div.innerHTML = ``
+            
+            for (let index = 0; index < confidences.length; index++) {
+                
+                let percent = Number.parseFloat(vals[index]).toPrecision(4);
+                
+                // don't show below 1 percent
+                if(percent < 1){
+                    break;
+                }
 
-            result_div.innerHTML += `
-                <h2>${data.predictions["2"].class_name}</h2>
-                <div class="progress">
-                    <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width:${Number.parseFloat(val2).toPrecision(4)}%">
-                        <div class="chart_text"> 
-                            ${Number.parseFloat(val2).toPrecision(4)}%
-                        </div>
-                    </div>
-                </div>
-            `
-
-            result_div.innerHTML += `
-                <h2>${data.predictions["3"].class_name}</h2>
-                <div class="progress">
-                    <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" style="width:${Number.parseFloat(val3).toPrecision(4)}%">
-                        <div class="chart_text"> 
-                            ${Number.parseFloat(val3).toPrecision(4)}%
-                        </div>
-                    </div>
-                </div>
-            `
-
-            val1 += increment1;
-            val2 += increment2;
-            val3 += increment3;
-
-
-            // show final results
-            if(i === 99){
-                result_div.innerHTML = `
-                    <h2>${data.predictions["1"].class_name} (${is_confident})</h2>
-                    <div class="progress">
-                        <div class="progress-bar" style="width:${confidence1}%">
-                            <div class="chart_text"> 
-                                ${confidence1}%
-                            </div>
-                        </div>
-                    </div>
-                `
+                let color_index = 0;
+                if(percent < 80){
+                    color_index = 1;    
+                }
+                if(percent < 40){
+                    color_index = 2;    
+                }
 
                 result_div.innerHTML += `
-                    <h2>${data.predictions["2"].class_name}</h2>
+                    <h2>${class_names[index]}</h2>
                     <div class="progress">
-                        <div class="progress-bar bg-warning" style="width:${confidence2}%">
+                        <div class="progress-bar ${colors[color_index]} progress-bar-striped progress-bar-animated" style="width:${percent}%">
                             <div class="chart_text"> 
-                                ${confidence2}%
+                                ${percent}%
                             </div>
                         </div>
                     </div>
                 `
+            }
 
-                result_div.innerHTML += `
-                    <h2>${data.predictions["3"].class_name}</h2>
-                    <div class="progress">
-                        <div class="progress-bar bg-danger" style="width:${confidence3}%">
-                            <div class="chart_text"> 
-                                ${confidence3}%
+
+            for (let index2 = 0; index2 < vals.length; index2++) {
+                vals[index2] += increments[index2];
+            }
+
+            // final results for correct percentages
+            if(i == 99){
+                result_div.innerHTML = ``
+                for (let index3 = 0; index3 < confidences.length; index3++) {
+
+                    // don't show below 1 percent
+                    if(confidences[index3] < 1){
+                        break;
+                    }
+                    let color_index = 0;
+                    if(confidences[index3] < 80){
+                        color_index = 1;    
+                    }
+                    if(confidences[index3] < 40){
+                        color_index = 2;    
+                    }
+                    result_div.innerHTML += `
+                        <h2>${class_names[index3]}</h2>
+                        <div class="progress">
+                            <div class="progress-bar ${colors[color_index]} progress-bar-striped progress-bar-animated" style="width:${confidences[index3]}%">
+                                <div class="chart_text"> 
+                                    ${confidences[index3]}%
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `
-
+                    `
+                }
             }
 
         }, i*30);
     }
 }
+
 
 
 
