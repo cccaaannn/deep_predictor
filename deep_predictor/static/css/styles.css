@@ -31,8 +31,8 @@ h2 {
 
 .jumbotron {
     /* border-style:solid; */
-    background-color: #162a19 ;
-    background-image: linear-gradient(147deg,#162a19 10%,#3a7343 80%);
+    background-color: #228b31 ;
+    /* background-image: linear-gradient(147deg,#162a19 10%,#3a7343 80%); */
 }
 
 
@@ -41,6 +41,8 @@ html, body {
     min-height: 100%;
     position:relative;
       
-    background-color:#26da4d;
-    background-image: linear-gradient(147deg, #26da4d, #69a85d);
+    background-color:#fc6304;
+    background-image: linear-gradient(147deg,#a74304 10%,#fc6304 80%);
+    /* background-image: linear-gradient(147deg, #26da4d, #69a85d); */
+   
 }
