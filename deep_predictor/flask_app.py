@@ -25,7 +25,7 @@ cfg = file_folder_operations.read_json_file(flask_cfg_path)
 
 
 # upload options
-max_content_length = cfg["flask_options"]["upload_options"]["max_content_length"]
+max_content_length = eval(cfg["flask_options"]["upload_options"]["max_content_length"])
 supported_extensions = cfg["flask_options"]["upload_options"]["supported_extensions"]
 
 # api options
