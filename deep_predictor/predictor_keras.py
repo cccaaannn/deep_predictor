@@ -64,7 +64,7 @@ class predictor_keras():
     def __raw_prediction_to_json(self, raw_prediction):
         """converts keras raw prediction to json with required fields"""
         self.logger.info("converting raw_prediction to json raw_prediction: {0}".format(raw_prediction))
-        predictions = {"predictions" : {"is_confident" : 1}}
+        predictions = {"predictions":[]}
 
         topN_preds = raw_prediction.argsort()[0][-self.keras_topN:][::-1]
         
@@ -74,15 +74,13 @@ class predictor_keras():
                 "class_name" : str(self.keras_names[pred]),
                 "confidence" :  float("{0:.5f}".format(raw_prediction[0][pred]))
             }
-
-            predictions["predictions"].update({str(index+1) : temp_prediction})
+            predictions["predictions"].append(temp_prediction)
 
         # if first guess is lover than threshold mark as not confident and set image class to not-confident for saving
-        if(predictions["predictions"]["1"]["confidence"] < self.confidence_threshold):
-            predictions["predictions"].update({"is_confident" : 0})
+        if(predictions["predictions"][0]["confidence"] < self.confidence_threshold):
             image_class = self.not_confiedent_name
         else:
-            image_class = predictions["predictions"]["1"]["class_name"]
+            image_class = predictions["predictions"][0]["class_name"]
 
         return predictions, image_class
 
