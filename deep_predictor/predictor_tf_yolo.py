@@ -28,6 +28,8 @@ class predictor_tf_yolo():
             self.tf_yolo_image_size = cfg["predictor_options"]["model_options"]["input_size"]
             self.iou_threshold = cfg["predictor_options"]["model_options"]["iou_threshold"]
             self.score_threshold = cfg["predictor_options"]["model_options"]["score_threshold"]
+            self.max_output_size_per_class = cfg["predictor_options"]["model_options"]["max_output_size_per_class"]
+            self.max_total_size = cfg["predictor_options"]["model_options"]["max_total_size"]
 
             # model_paths
             self.predictions_main_folder = cfg["predictor_options"]["model_paths"]["predictions_main_folder"] 
@@ -101,7 +103,14 @@ class predictor_tf_yolo():
 
         # prediction 
         try:
-            raw_prediction = perform_detect(self.tf_yolo_model, self.tf_yolo_names, image, image_data, self.iou_threshold, self.score_threshold)
+            raw_prediction = perform_detect(
+                self.tf_yolo_model, 
+                self.tf_yolo_names, 
+                image, image_data, 
+                self.iou_threshold, 
+                self.score_threshold,
+                self.max_output_size_per_class,
+                self.max_total_size)
         except:
             self.logger.error("perform_detect raised exception", exc_info=True)
             return 500, None, None

@@ -24,7 +24,7 @@ def load_tf_yolo_model(model_path):
     saved_model_loaded = tf.saved_model.load(model_path, tags=[tag_constants.SERVING])
     return saved_model_loaded
 
-def perform_detect(saved_model_loaded, names, original_image, image_data, iou_threshold, score_threshold):
+def perform_detect(saved_model_loaded, names, original_image, image_data, iou_threshold, score_threshold, max_output_size_per_class, max_total_size):
 
     images_data = []
     for i in range(1):
@@ -43,8 +43,8 @@ def perform_detect(saved_model_loaded, names, original_image, image_data, iou_th
         boxes=tf.reshape(boxes, (tf.shape(boxes)[0], -1, 1, 4)),
         scores=tf.reshape(
             pred_conf, (tf.shape(pred_conf)[0], -1, tf.shape(pred_conf)[-1])),
-        max_output_size_per_class=50,
-        max_total_size=50,
+        max_output_size_per_class=max_output_size_per_class,
+        max_total_size=max_total_size,
         iou_threshold=iou_threshold,
         score_threshold=score_threshold
     )
