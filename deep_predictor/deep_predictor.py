@@ -51,14 +51,17 @@ class deep_predictor():
         else:
             self.logger.error("cfg file error, predictor backend is not supported")
 
+    def get_model_info(self):
+        """return model info"""
+        return self.model_info, self.model_id
+
     def predict_image(self, image_path):
         self.logger.info("performing prediction on the image path:{0} backend:{1} method:{2} model id:{3}".format(image_path, self.predictor_backend, self.method, self.model_id))
         if(self.predictor and self.predictor.is_inited):
             # call predictors predict image function  
             status, prediction_json, predicted_image_path = self.predictor.predict_image(image_path)
-            # add model info to return
-            return status, self.model_info, prediction_json, predicted_image_path
+            return status, prediction_json, predicted_image_path
         else:
             self.logger.error("backend for this predictor is not inited")
-            return 550, self.model_info, None, None
+            return 550, None, None
 

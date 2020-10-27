@@ -50,7 +50,7 @@ for predictor in cfg["flask_options"]["prediction_options"]["predictors"]:
 
 # create logger and db
 logger = logger_creator().flask_logger()
-db = database_handler(database_path)
+db = database_handler(database_path = database_path, check_connection = True, create_table = True)
 
 
 
@@ -127,7 +127,8 @@ def upload_image():
             abort(400, description="image is not supported")
 
         # prepare preediction
-        db.create_prediction(prediction_id)
+        model_info, model_id = predictors[model_name].get_model_info()
+        db.create_prediction(prediction_id, model_info, model_id)
 
         # start prediction on thread
         pred_thread = prediction_thread(

@@ -14,12 +14,12 @@ class prediction_thread(threading.Thread):
     def run(self):
         self.logger.info("prediction started on thread")
 
-        status, model_info, prediction, image_path = self.predictor.predict_image(self.temp_image_path)
+        status, prediction, image_path = self.predictor.predict_image(self.temp_image_path)
 
         # save results to db
         if(status == 200):
             self.logger.info("prediction is successful {0}".format(status))
-            self.db.update_successful_prediction(self.prediction_id, prediction, model_info, model_info["model_id"], image_path)
+            self.db.update_successful_prediction(self.prediction_id, prediction, image_path)
         else:
             self.logger.warning("prediction failed with status {0}".format(status))
-            self.db.update_failed_prediction(self.prediction_id, status, model_info, model_info["model_id"])
+            self.db.update_failed_prediction(self.prediction_id, status)
