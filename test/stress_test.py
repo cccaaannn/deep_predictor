@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 import random
 import string
+import json
 import os
 
 
@@ -43,15 +44,12 @@ if __name__ == "__main__":
     id_prefix = "TEST" 
     id_size = 12
     url = 'http://127.0.0.1:5000/upload'
-    test_image_folder = "test_images/other"
-    model_names = [    
-    "food 10 vgg16", 
-    "food 10 vgg16 2", 
-    "food 10 densenet", 
-    "tf_yolov4 ingredient", 
-    "tf_yolov4 coco"
-    ]
-    
+    # test_image_folder = "test_images/other"
+    test_image_folder = "test_images/food"
+
+    model_names_json = json.loads(requests.get('http://127.0.0.1:5000/api?predictors').text)
+    model_names = model_names_json["predictors"]
+
     workers = 10
     request_count = 10
 
