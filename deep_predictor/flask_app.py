@@ -12,7 +12,7 @@ sys.path.insert(0,'deep_predictor')
 from logger_creator import logger_creator
 from database_handler import database_handler
 from prediction_thread import prediction_thread
-from predictor import deep_predictor
+from predictor import predictor as deep_predictor
 
 # helpers
 from helpers.file_folder_operations import file_folder_operations

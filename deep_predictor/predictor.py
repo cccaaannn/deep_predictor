@@ -13,7 +13,7 @@ from helpers.file_folder_operations import file_folder_operations
 from helpers.image_operations import image_operations
 from logger_creator import logger_creator
 
-class deep_predictor():
+class predictor():
     def __init__(self, cfg_path):
         self.logger = logger_creator().deep_predictor_logger()
         self.cfg_path = cfg_path
