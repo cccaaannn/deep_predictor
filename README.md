@@ -1,15 +1,16 @@
 # deep predictor
-#### A simple backend for image predicting tasks with deep earning.
+#### A simple backend for image predicting tasks with deep learning.
 ___
 
 ![](https://img.shields.io/github/repo-size/cccaaannn/deep_predictor?style=flat-square) [![GitHub license](https://img.shields.io/github/license/cccaaannn/deep_predictor?style=flat-square)](https://github.com/cccaaannn/deep_predictor/blob/master/LICENSE)
 
 ## Features
-- Simple api style, no need for login.
-- Supports multiple models at the same time.
-- Easy to configure with detailed cfg files for each model. 
+- Supports multiple models running at the same time.
+- No modification needed for regular image predicting keras models.
 - Saves detailed info about model and prediction to the database.
-- Organizes predicted images by saving them to folders named by most confident class names for later use.
+- Organizes predicted images by saving them to folders named by most confident class names.
+- Easy to configure for different models, just create a cfg file for the model wit using cfg template.
+- Simple api style no need login for prediction, just post the image and get the result from the api as json. 
 
 </br>
 
