@@ -4,7 +4,6 @@ flask
 opencv-python
 pillow
 numpy
-
 easydict
 pandas
 requests
