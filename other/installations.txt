@@ -1,0 +1,63 @@
+----optional stuff----
+
+--sqlite browser--
+sudo add-apt-repository -y ppa:linuxgndu/sqlitebrowser
+sudo apt-get update
+sudo apt-get install sqlitebrowser
+
+--global opencv--
+sudo apt-get install libopencv-dev
+
+
+----required stuff (versions are for my case----
+
+--install python 3.7--
+sudo apt update
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt install python3.7
+sudo apt-get install python3-pip
+
+--install repo--
+git clone https://github.com/cccaaannn/deep_predictor
+
+--install virtualenv--
+sudo pip3 install virtualenv
+virtualenv -p /usr/bin/python3.7 venv
+
+--install libs--
+pip install -r requirements_all.txt
+--or
+pip install tensorflow==2.2.0 keras==2.4.3 flask opencv-python numpy pillow easydict pandas requests selenium beautifulsoup4 pyheif imagepreprocessing 
+
+
+
+
+----deploy on ubuntu----
+
+--install apache and mod-wsgi
+sudo apt install apache2
+sudo apt-get install libapache2-mod-wsgi-py3
+
+--create flaskapps dir
+sudo mkdir -p /var/www/flaskapps
+
+--move project to flaskapps dir
+/var/www/flaskapps/deep_predictor
+
+--create apache config file
+/etc/apache2/sites-available/deep_predictor.conf
+
+--enable site
+sudo a2ensite deep_predictor
+sudo systemctl reload apache2
+
+--error log
+sudo tail -100 /var/log/apache2/error.log
+
+TODO (add detail to deploy)
+...
+
+
+
+
