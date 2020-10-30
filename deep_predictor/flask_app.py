@@ -126,7 +126,7 @@ def create_app():
 
 
             # check image resizability
-            status, unique_full_filename = image_operations.validate_image(unique_full_filename, try_to_convert = True, delete = True)
+            status, unique_full_filename = image_operations.validate_image(unique_full_filename, try_to_convert = True, delete_unresizable = True)
             if(not status):
                 logger.warning("image is not supported")
                 abort(400, description="image is not supported")

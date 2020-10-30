@@ -21,11 +21,13 @@ class image_operations():
             return 0
         else:
             return 1
-    
+
     @staticmethod
-    def validate_image(image_path, try_to_convert = True, delete = True):
+    def validate_image(image_path, try_to_convert = True, delete_unresizable = True):
         """validates image by trying to resize it with opencv, if selected tries to convert unresizable image to jpg and tres to resize again"""
         is_image_ok = image_operations.try_to_resize_image(image_path)
+        
+        # try to convert if image is not resizing
         if(not is_image_ok and try_to_convert):
             # try to convert to jpg with pillow
             is_image_ok, image_path = image_operations.convert_to_jpg(image_path)
@@ -33,18 +35,18 @@ class image_operations():
             if(is_image_ok):
                 is_image_ok = image_operations.try_to_resize_image(image_path) 
 
-            # if(not is_image_ok):
-            #     # try to convert to jpg with ...
-            #     is_image_ok, image_path = image_operations.convert_to_jpg(image_path)
-            #     # try resizing again
-            #     if(is_image_ok):
-            #         is_image_ok = image_operations.try_to_resize_image(image_path) 
-
+            # try to convert if image is heic
+            if(not is_image_ok):
+                # try to convert to jpg with pyheif
+                is_image_ok, image_path = image_operations.convert_heic_to_jpg(image_path)
+                # try resizing again
+                if(is_image_ok):
+                    is_image_ok = image_operations.try_to_resize_image(image_path) 
 
         if(is_image_ok):
             return 1, image_path
         else:
-            if(delete):
+            if(delete_unresizable):
                 os.remove(image_path)
             return 0, image_path
 
@@ -67,8 +69,39 @@ class image_operations():
             new_path = file_name + ".jpg"
             
             # convert image
-            im = Image.open(image_path).convert('RGB')
-            im.save(new_path)
+            image = Image.open(image_path).convert('RGB')
+            image.save(new_path)
+
+            # remove old extension image
+            os.remove(image_path)
+            return 1, new_path
+        except Exception as e:
+            print(e)
+            return 0, image_path
+
+    @staticmethod
+    def convert_heic_to_jpg(image_path):
+        """tries to convert the heic image to jpg with pyheif and pillow (does not works on windows)"""
+        try:
+            # pyheif not works on windows so we try to import it
+            import pyheif
+
+            # create new path name
+            file_name, _ = os.path.splitext(image_path)
+            new_path = file_name + ".jpg"
+
+            # convert and save the image
+            heif_file = pyheif.read(image_path)
+            image = Image.frombytes(
+                heif_file.mode, 
+                heif_file.size, 
+                heif_file.data,
+                "raw",
+                heif_file.mode,
+                heif_file.stride,
+                )
+
+            image.save(new_path, "JPEG")
 
             # remove old extension image
             os.remove(image_path)
