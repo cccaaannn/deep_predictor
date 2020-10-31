@@ -35,6 +35,10 @@ h2 {
     /* background-image: linear-gradient(147deg,#162a19 10%,#3a7343 80%); */
 }
 
+.progress {
+    height: 30px;
+    position: relative;
+}
 
 html, body {
 

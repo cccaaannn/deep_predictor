@@ -82,7 +82,7 @@ function animate_bar_charts(data){
                     <div class="progress">
                         <div class="progress-bar ${colors[color_index]} progress-bar-striped progress-bar-animated" style="width:${percent}%">
                             <div class="chart_text"> 
-                                ${percent}%
+                                <h5>${percent}%</h5>
                             </div>
                         </div>
                     </div>
@@ -115,7 +115,7 @@ function animate_bar_charts(data){
                         <div class="progress">
                             <div class="progress-bar ${colors[color_index]} progress-bar-striped progress-bar-animated" style="width:${confidences[index3]}%">
                                 <div class="chart_text"> 
-                                    ${confidences[index3]}%
+                                <h5>${confidences[index3]}%</h5>
                                 </div>
                             </div>
                         </div>
