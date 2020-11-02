@@ -63,7 +63,7 @@ class predictor_keras():
 
     def __raw_prediction_to_json(self, raw_prediction):
         """converts keras raw prediction to json with required fields"""
-        self.logger.info("converting raw_prediction to json raw_prediction: {0}".format(raw_prediction))
+        self.logger.debug("converting raw_prediction to json raw_prediction: {0}".format(raw_prediction))
         predictions = {"predictions":[]}
 
         topN_preds = raw_prediction.argsort()[0][-self.keras_topN:][::-1]
@@ -109,14 +109,14 @@ class predictor_keras():
         # convert prediction to json
         try:
             prediction_json, most_confident_class = self.__raw_prediction_to_json(raw_prediction)
-            self.logger.info("predictions: {0}".format(prediction_json))
+            self.logger.debug("predictions: {0}".format(prediction_json))
         except:
             self.logger.error("prediction can not converted to json", exc_info=True)
             return 520, None, None
 
         # perform image action
         try:
-            self.logger.info("performing chosen action to image ({0})".format(self.predicted_image_action))
+            self.logger.debug("performing chosen action to image ({0})".format(self.predicted_image_action))
             predicted_image_path = image_operations.perform_image_action(image_path, self.predictions_main_folder, most_confident_class, self.predicted_image_action)
         except:
             self.logger.error("image action may not been performed", exc_info=True)

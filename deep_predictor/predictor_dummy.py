@@ -40,12 +40,12 @@ class predictor_dummy():
 
     def predict_image(self, image_path):
         if(self.is_inited):
-            self.logger.info("predictor dummy making prediction")
+            self.logger.debug("predictor dummy making prediction")
             time.sleep(self.sleep)
 
             # perform image action
             try:
-                self.logger.info("performing chosen action to image ({0})".format(self.predicted_image_action))
+                self.logger.debug("performing chosen action to image ({0})".format(self.predicted_image_action))
                 predicted_image_path = image_operations.perform_image_action(image_path, self.predictions_main_folder, self.image_class, self.predicted_image_action)
             except:
                 self.logger.error("image action may not been performed", exc_info=True)
