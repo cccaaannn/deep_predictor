@@ -7,6 +7,8 @@ sudo apt-get install sqlitebrowser
 
 --global opencv--
 sudo apt-get install libopencv-dev
+----------------
+
 
 
 ----required stuff (versions are for my case----
@@ -26,15 +28,16 @@ sudo pip3 install virtualenv
 virtualenv -p /usr/bin/python3.7 venv
 
 --install libs--
-pip install -r requirements_all.txt
+pip install -r requirements/all.txt
 --or
 pip install tensorflow==2.2.0 keras==2.4.3 flask opencv-python numpy pillow easydict pandas requests selenium beautifulsoup4 pyheif imagepreprocessing 
-
+----------------
 
 
 
 ----deploy on ubuntu----
 
+--apache--
 --install apache and mod-wsgi
 sudo apt install apache2
 sudo apt-get install libapache2-mod-wsgi-py3
@@ -49,15 +52,13 @@ sudo mkdir -p /var/www/flaskapps
 /etc/apache2/sites-available/deep_predictor.conf
 
 --enable site
+--In the /etc/apache2/sites-available
 sudo a2ensite deep_predictor
 sudo systemctl reload apache2
-
---error log
-sudo tail -100 /var/log/apache2/error.log
-
-TODO (add detail to deploy)
-...
+----------------
 
 
 
-
+--waitress--
+--run waitress_server.py
+----------------
