@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <!-- bootstrap --->
-    <link rel="stylesheet" href="{{ url_for('static',filename='libs/bootsrap-4.3.1.css') }}">
+        <!-- bootstrap (there is a local fallback at the bottom)--->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    
-    <!-- jquery -->
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-    <script src = "{{ url_for('static',filename='libs/jquery-3.3.1.js') }}"></script>
+        <!-- my css -->
+        <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}">
 
-    <!-- flask uses this format -->
-    <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}">
-    <script type="text/javascript"src="{{ url_for('static', filename='js/id_generator.js') }}"></script>
-    
-    <title>Deep predictor</title>
-</head>
+        <!-- jquery with local fallback-->
+        <script src = "https://code.jquery.com/jquery-3.3.1.slim.min.js" 
+            integrity = "sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" 
+            crossorigin = "anonymous">
+        </script>
+        <script>
+            window.jQuery || document.write("<script src = \"{{ url_for('static',filename='libs/jquery-3.3.1.js') }}\"><\/script>");
+        </script>
+
+        <title>Deep predictor</title>
+    </head>
     <body>
         <br><br><br>
-
         <div class = "container">
                 {% block body %}
                 
@@ -30,19 +33,31 @@
 
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <!-- <script src = "https://code.jquery.com/jquery-3.3.1.slim.min.js" 
-        integrity = "sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" 
-        crossorigin = "anonymous">
-    </script> -->
-    
+    <!-- popper js with local fallback-->
     <script src = "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" 
         integrity = "sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" 
         crossorigin = "anonymous">
     </script>
-    
+    <script>
+        if(typeof(Popper) === 'undefined'){
+            document.write("<script src = \"{{ url_for('static',filename='libs/popper.min-1.14.3.js') }}\"><\/script>");
+            console.log("cdn offline using local popper.js");
+        }
+    </script>
+
+    <!-- bootstrap with local fallback -->
     <script src = "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" 
         integrity = "sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" 
         crossorigin = "anonymous">
     </script>
+    <script>
+        if(typeof($.fn.modal) === 'undefined'){
+            document.write("<link rel=\"stylesheet\" href=\"{{ url_for('static',filename='libs/bootsrap-4.3.1.css') }}\">");
+            document.write("<link rel=\"stylesheet\" href=\"{{ url_for('static',filename='css/styles.css') }}\">");
+            document.write("<script src = \"{{ url_for('static',filename='libs/bootstrap-4.1.3.js') }}\"><\/script>");
+            console.log("cdn offline using local bootstrap");
+        }
+    </script>
+
     </body>
 </html>
