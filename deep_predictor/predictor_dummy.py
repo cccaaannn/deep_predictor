@@ -14,8 +14,8 @@ class predictor_dummy():
             self.__init_backend()
 
         self.simulate_result = {
-            "keras" : {'predictions': [{'class_name': 'person', 'confidence': 0.99786, 'bbox': {'x1': 193, 'y1': 98, 'x2': 271, 'y2': 379}}, {'class_name': 'dog', 'confidence': 0.99429, 'bbox': {'x1': 62, 'y1': 265, 'x2': 203, 'y2': 345}}, {'class_name': 'horse', 'confidence': 0.98321, 'bbox': {'x1': 405, 'y1': 140, 'x2': 600, 'y2': 344}}]},
-            "tf_yolo" :  {'predictions': {'is_confident': 0, '1': {'class_index': 1, 'class_name': 'adanaKenap', 'confidence': 0.72227687}, '2': {'class_index': 2, 'class_name': 'akcaabatKofte', 'confidence': 0.17435183}, '3': {'class_index': 5, 'class_name': 'bulgurPilavi', 'confidence': 0.06662769}}}
+            "tf_yolo" : {'predictions': [{'class_name': 'person', 'confidence': 0.99786, 'bbox': {'x1': 193, 'y1': 98, 'x2': 271, 'y2': 379}}, {'class_name': 'dog', 'confidence': 0.99429, 'bbox': {'x1': 62, 'y1': 265, 'x2': 203, 'y2': 345}}, {'class_name': 'horse', 'confidence': 0.98321, 'bbox': {'x1': 405, 'y1': 140, 'x2': 600, 'y2': 344}}]},
+            "keras" :  {'predictions': [{'class_index': 1, 'class_name': 'adanaKenap', 'confidence': 0.72227}, {'class_index': 2, 'class_name': 'akcaabatKofte', 'confidence': 0.17435}, {'class_index': 5, 'class_name': 'bulgurPilavi', 'confidence': 0.06662}]}
         }
 
     # load cfg options
