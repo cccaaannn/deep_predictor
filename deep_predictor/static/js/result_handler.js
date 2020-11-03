@@ -95,7 +95,7 @@ function animate_bar_charts(data){
             }
 
             // final results for correct percentages
-            if(i == 99){
+            if(i === 99){
                 result_div.innerHTML = ``
                 for (let index3 = 0; index3 < confidences.length; index3++) {
 
