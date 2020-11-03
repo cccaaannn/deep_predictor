@@ -6,20 +6,20 @@ const result_div = document.getElementById('result_div');
 
 function on_success_keras(data){
     if(data.predictions.length < 1){
-        header_div.innerHTML = `<h1 class="display-4">Nothing detected</h1>`;
+        header_div.innerHTML = `<h1>Nothing detected</h1>`;
     }
     else{
-        header_div.innerHTML = `<h1 class="display-4">Prediction results</h1>`;
+        header_div.innerHTML = `<h1>Prediction results</h1>`;
         animate_bar_charts(data);
     }
 }
 
 function on_success_darknet(data){
     if(data.predictions.length < 1){
-        header_div.innerHTML = `<h1 class="display-4">Nothing detected</h1>`;
+        header_div.innerHTML = `<h1>Nothing detected</h1>`;
     }
     else{
-        header_div.innerHTML = `<h1 class="display-4">Detection results</h1><p>${data.predictions.length} unique object(s) found</p>`;
+        header_div.innerHTML = `<h1>Detection results</h1><p>${data.predictions.length} unique object(s) found</p>`;
         // let predictions = data.predictions;
         // for (let index = 0; index < predictions.length; index++) {
         //     result_div.innerHTML += `
@@ -32,7 +32,7 @@ function on_success_darknet(data){
 
 function on_error(){
     const error_html = `
-    <h1 class="display-4">Prediction failed</h1>
+    <h1>Prediction failed</h1>
     `;
     header_div.innerHTML = error_html;
 }

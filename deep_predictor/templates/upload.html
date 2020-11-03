@@ -4,8 +4,12 @@
 
 <div class="jumbotron jumbotron-fluid">
 
+    <!-- text comes from css -->
+    <a class="btn btn-danger back_button" href="/" role="button"></a>
+
   <div class="center_div">
-    <h1 class="display-4">Test Your Image</h1>
+
+    <h1>Test Your Image</h1>
     
     <form method="POST" action="" enctype="multipart/form-data" id="image-form">
 
@@ -14,18 +18,11 @@
             <label class="custom-file-label" for="customFile">Choose image</label>
         </div>
 
-
         <p><input type="hidden" name="prediction_id" id="prediction_id"></p>
         <p><input type="hidden" name="model_name" id="model_name"></p>
 
-
         <div class="row">
-            <div class="col-md-2">
-                <input type="submit" value="Predict" class="btn btn-danger btn-lg">
-            </div>
-
-            <div class="col-md-8">
-
+            <div class="col-10">
                 <div class="dropdown">
                     <button class="btn btn-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
                         {{models[0]}}
@@ -36,19 +33,19 @@
                         {% endfor %}
                     </div>
                 </div>
+            </div>
 
+            <div class="col-2">
+                <input type="submit" value="Predict" class="btn btn-danger float-right">
             </div>
-            <div class="col-md-2">
-                <a class="btn btn-danger float-right" href="/" role="button">Back</a>
-            </div>
+
         </div>
 
     </form>
   </div>
 
 </div>
-</br></br></br></br></br></br></br></br></br></br>
-</br></br></br>
+
 
 
 <script type="text/javascript"src="{{ url_for('static', filename='js/upload_controller.js') }}"></script>
