@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+        <!-- bootstrap (there is a local fallback at the bottom)--->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <!-- my css -->
+        <link rel="stylesheet" href="styles.css">
+
+        <script src = "https://code.jquery.com/jquery-3.3.1.slim.min.js" 
+            integrity = "sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" 
+            crossorigin = "anonymous">
+        </script>
+
+
+
+    </head>
+    <body>
+
+        <br><br><br>
+        <div class = "container">   
+
+            <!-- home page -->
+            <div class="jumbotron">
+                <h1>Deep predictor</h1>
+                <p>Predict your image with our predictor now!</p>
+                <hr class="my-4">
+                <p>Deep predictor predicts your images and shows its results with a simple ui. Prediction confidences shown with bar charts for better visualization.</p>
+                <p>We are constantly improving our results but results are experimental and we have no guarantee over the results.</p>
+                <a class="btn button_color btn-lg" href="/" role="button">Test your image</a>
+                </p>
+            </div>
+
+
+            <!-- upload page -->
+            <div class="jumbotron jumbotron-fluid">
+
+                <!-- text comes from css -->
+                <a class="btn button_color back_button" href="/" role="button"></a>
+            
+              <div class="center_div">
+            
+                <h1>Test Your Image</h1>
+                
+                <form action="" enctype="multipart/form-data" id="image-form">
+            
+                    <div class="custom-file">
+                        <input type="file" name="file" class="custom-file-input" id="customFile" accept=".jpg,.jpeg,.png" >
+                        <label class="custom-file-label" for="customFile">Choose image</label>
+                    </div>
+            
+                    <p><input type="hidden" name="prediction_id" id="prediction_id"></p>
+                    <p><input type="hidden" name="model_name" id="model_name"></p>
+            
+                    <div class="row">
+                        <div class="col-10">
+                            <div class="dropdown">
+                                <button class="btn button_color dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+                                    predictors
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item">vgg16</a>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="col-2">
+                            <input type="submit" value="Predict" class="btn button_color float-right">
+                        </div>
+            
+                    </div>
+            
+                </form>
+              </div>
+            
+            </div>
+
+
+            <!-- results page -->
+            <div class="jumbotron jumbotron-fluid">
+                <div class="center_div">
+            
+                    <div id="header_div">
+                        <h1>Prediction results</h1>
+                        </br>
+                        <h2>muz</h2>
+                        <div class="progress">
+                            <div class="progress-bar progress_1 progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                <div class="chart_text"> 
+                                    <h5>%100</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <h2>muz</h2>
+                        <div class="progress">
+                            <div class="progress-bar progress_2 progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                                <div class="chart_text"> 
+                                    <h5>%60</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <h2>muz</h2>
+                        <div class="progress">
+                            <div class="progress-bar progress_3 progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 30%">
+                                <div class="chart_text"> 
+                                    <h5>%30</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div id="result_div"></div>
+            
+                    </br>
+                    <a class="btn button_color float-left" href="/" role="button">Home</a>
+                    <a class="btn button_color float-right" href="/" role="button">Try another</a>
+                </div>
+                </br>
+            </div>
+
+        </div>
+
+    </body>
+
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" 
+        integrity = "sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" 
+        crossorigin = "anonymous">
+    </script>
+
+    <script src = "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" 
+        integrity = "sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" 
+        crossorigin = "anonymous">
+    </script>
+</html>
+

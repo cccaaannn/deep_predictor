@@ -1,0 +1,101 @@
+html, body {
+    min-height: 100%;
+    position:relative;
+    
+    /* background-color:#426aee; */
+    background-color:#f17d35;
+    /* background-image: linear-gradient(147deg,#ac521a 10%,#f17d35 80%); */
+    /* background-image: linear-gradient(147deg, #26da4d, #69a85d); */
+}
+
+.jumbotron {
+    /* border-style:solid; */
+    /* background-color: #ff6e1b; */
+    background-color: #228b31 ;
+    /* background-image: linear-gradient(147deg,#162a19 10%,#3a7343 80%); */
+}
+
+
+/* html elements */
+h1 {
+    font-size: 4em;
+    color: white;
+}
+
+h2 {
+    color: white;
+}
+
+a {
+    color: Black;
+}
+
+p {
+    color: white !important;
+}
+
+
+/* progress bar */
+.progress {
+    height: 30px;
+    position: relative;
+}
+
+.chart_text{
+    color: Black !important;
+    font-weight: bold !important;
+}
+
+.progress_1 {
+    /* background-color: #3ea800 !important; */
+    background-color: #2760fd !important;
+}
+.progress_2 {
+    /* background-color: #cfc100 !important; */
+    background-color: #ffd51b !important;
+}
+.progress_3 {
+    /* background-color: #e40000 !important; */
+    background-color: #ff1837de !important;
+}
+
+
+/* button */
+.button_color{
+    /* background-color: #cf0e0e !important; */
+    background-color: #f51b3f !important;
+    color: white !important;
+}
+
+
+/* other stuff */
+.center_div {
+    margin: 0 auto;
+    width:70%
+}
+
+.back_button{
+    margin-left: 10px;
+    margin-top: -100px;
+}
+
+.back_button::after{
+    content: "back";
+}
+
+
+/* mobile resizing */
+@media (max-width: 575px){
+    .back_button{
+        margin-top: -40px;
+    }
+    .back_button::after{
+        content: "<";
+    }
+    h1{
+        font-size: 2em !important;
+    }
+    h2{
+        font-size: 1em !important;
+    }
+}
