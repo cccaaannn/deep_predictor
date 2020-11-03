@@ -7,6 +7,7 @@ p {
 }
 
 h1 {
+    font-size: 4em;
     color: white;
 }
 
@@ -40,13 +41,39 @@ h2 {
     position: relative;
 }
 
+.back_button{
+    margin-left: 10px;
+    margin-top: -100px;
+}
+
+.back_button::after{
+    content: "back";
+}
+
+/* mobile resizing */
+@media (max-width: 575px){
+    .back_button{
+        margin-top: -40px;
+    }
+    .back_button::after{
+        content: "<";
+    }
+    h1{
+        font-size: 2em !important;
+    }
+    h2{
+        font-size: 1em !important;
+    }
+}
+
+
 html, body {
 
     min-height: 100%;
     position:relative;
       
-    background-color:#fc6304;
-    background-image: linear-gradient(147deg,#ac521a 10%,#f17d35 80%);
+    background-color:#f17d35;
+    /* background-image: linear-gradient(147deg,#ac521a 10%,#f17d35 80%); */
     /* background-image: linear-gradient(147deg, #26da4d, #69a85d); */
    
 }
