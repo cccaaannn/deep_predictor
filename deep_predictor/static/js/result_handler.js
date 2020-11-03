@@ -1,9 +1,9 @@
-
-// divs
+// get divs as global variables
 const header_div = document.getElementById('header_div');
 const result_div = document.getElementById('result_div');
 
 
+// result functions
 function on_success_keras(data){
     if(data.predictions.length < 1){
         header_div.innerHTML = `<h1>Nothing detected</h1>`;
@@ -30,6 +30,16 @@ function on_success_darknet(data){
     }
 }
 
+function on_success_dummy(data){
+    if(data.predictions.length < 1){
+        header_div.innerHTML = `<h1>Nothing detected</h1>`;
+    }
+    else{
+        header_div.innerHTML = `<h1>Dummy prediction results</h1>`;
+        animate_bar_charts(data);
+    }
+}
+
 function on_error(){
     const error_html = `
     <h1>Prediction failed</h1>
@@ -39,12 +49,11 @@ function on_error(){
 
 
 
-
-
 function animate_bar_charts(data){
-    /*animates charts->                   because why not */
+    /*animates charts
+    because why not */
 
-    colors = ["", "bg-warning", "bg-danger"]
+    colors = ["progress_1", "progress_2", "progress_3"]
     let confidences = [];
     let class_names = [];
     let vals = [];
@@ -129,9 +138,6 @@ function animate_bar_charts(data){
 
 
 
-
-
-
 // request the api
 function fetch_api(){
     fetch("/api?prediction_id=" + prediction_id)
@@ -139,40 +145,40 @@ function fetch_api(){
     .then(function(data) {
         if(data.prediction_status === 200){
             console.log(data)
-            // var jsonPretty = JSON.stringify(data,null,2);
 
-
-
-            
+            // check predictor backend
             if(data.model_info.predictor_backend === "keras"){
                 on_success_keras(data);
             }
             else if(data.model_info.predictor_backend === "darknet" || data.model_info.predictor_backend === "tf_yolo"){
                 on_success_darknet(data);
             }
+            else if(data.model_info.predictor_backend === "dummy"){
+                on_success_dummy(data);
+            }
             else{
-                clearInterval(api_request_interval);
-                clearTimeout(api_request_timeout);
                 on_error();
             }
 
-
+            // stop timers
+            clearInterval(api_request_interval);
+            clearTimeout(api_request_timeout);
+        }
+        // prediction failed 
+        else if(data.prediction_status > 200){
+            on_error();
             clearInterval(api_request_interval);
             clearTimeout(api_request_timeout);
         }
 
-    })
-    .catch(function() {
+    // function failed
+    }).catch(function() {
         console.log("error");
         clearInterval(api_request_interval);
+        clearTimeout(api_request_timeout);
         on_error();
     });
 }
-
-
-
-
-
 
 
 
@@ -193,4 +199,3 @@ let api_request_timeout = setTimeout(api_request_timeout_function, 10000);
 // }
 
 // let timeout2 = setTimeout(timeout_function2, 11000);
-

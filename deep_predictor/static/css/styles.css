@@ -1,11 +1,20 @@
-a {
-    color: Black;
+html, body {
+    min-height: 100%;
+    position:relative;
+
+    /* background-color:#f17d35;*/
+    background-color:#60c5ff; 
+    /* background-image: linear-gradient(147deg,#ac521a 10%,#f17d35 80%); */
 }
 
-p {
-    color: white !important;
+.jumbotron {
+    /* border-style:solid; */
+    /* background-color: #228b31 ;*/
+    background: #3173ff;
 }
 
+
+/* html elements */
 h1 {
     font-size: 4em;
     color: white;
@@ -15,30 +24,53 @@ h2 {
     color: white;
 }
 
+a {
+    color: Black;
+}
+
+p {
+    color: white !important;
+}
+
+
+/* progress bar */
+.progress {
+    height: 30px;
+    position: relative;
+    background-color: #ffffff !important;
+}
+
 .chart_text{
     color: Black !important;
     font-weight: bold !important;
 }
 
+.progress_1 {
+    /* background-color: #3ea800 !important; */
+    background-color: #00d841 !important;
+}
+.progress_2 {
+    /* background-color: #cfc100 !important; */
+    background-color: #ff9100 !important;
+}
+.progress_3 {
+    /* background-color: #e40000 !important; */
+    background-color: #ff1332de !important;
+}
+
+
+/* button */
+.button_color{
+    /* background-color: #cf0e0e !important; */
+    background-color: #ff3355 !important;
+    color: white !important;
+}
+
+
+/* other stuff */
 .center_div {
     margin: 0 auto;
     width:70%
-}
-
-.button {
-    background-color: #ff0055;
-    color: white;
-  }
-
-.jumbotron {
-    /* border-style:solid; */
-    background-color: #228b31 ;
-    /* background-image: linear-gradient(147deg,#162a19 10%,#3a7343 80%); */
-}
-
-.progress {
-    height: 30px;
-    position: relative;
 }
 
 .back_button{
@@ -50,6 +82,7 @@ h2 {
     content: "back";
 }
 
+
 /* mobile resizing */
 @media (max-width: 575px){
     .back_button{
@@ -59,21 +92,9 @@ h2 {
         content: "<";
     }
     h1{
-        font-size: 2em !important;
+        font-size: 1.7em !important;
     }
     h2{
         font-size: 1em !important;
     }
-}
-
-
-html, body {
-
-    min-height: 100%;
-    position:relative;
-      
-    background-color:#f17d35;
-    /* background-image: linear-gradient(147deg,#ac521a 10%,#f17d35 80%); */
-    /* background-image: linear-gradient(147deg, #26da4d, #69a85d); */
-   
 }
