@@ -29,8 +29,6 @@ ___
 
 ## Mobile
 
-<img src="other/readme_images/main_page_mobile_example.png" alt="drawing" width="200"/>
-<img src="other/readme_images/upload_image_mobile_example.png" alt="drawing" width="200"/>
-<img src="other/readme_images/results_mobile_example.png" alt="drawing" width="200"/>
+<img src="other/readme_images/main_page_mobile_example.png" alt="drawing" width="200"/> <img src="other/readme_images/upload_image_mobile_example.png" alt="drawing" width="200"/> <img src="other/readme_images/results_mobile_example.png" alt="drawing" width="200"/>
 
 </br>
