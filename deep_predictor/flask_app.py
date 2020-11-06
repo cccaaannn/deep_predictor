@@ -21,9 +21,12 @@ from helpers.image_operations import image_operations
 
 # create app
 def create_app(deep_predictor_cfg_path):
+    # create logger
+    logger = logger_creator().flask_logger()
+    logger.info("creating flask app with cfg file on path:{0}".format(deep_predictor_cfg_path))
+
     # set config options
     cfg = file_folder_operations.read_json_file(deep_predictor_cfg_path)
-
 
     # flask options
     secret_key = cfg["deep_predictor_options"]["flask_options"]["secret_key"]
@@ -46,8 +49,7 @@ def create_app(deep_predictor_cfg_path):
     default_predictor_name = cfg["deep_predictor_options"]["prediction_options"]["default_predictor_name"]
 
 
-    # create logger and db
-    logger = logger_creator().flask_logger()
+    # create instace of db class
     db = database_handler(database_path = database_path, check_connection = True, create_table = True)
 
     # create predictors
@@ -67,19 +69,19 @@ def create_app(deep_predictor_cfg_path):
 
     @app.route('/', methods=['GET'])
     def home():
-        logger.info("function: {0} method: {1}".format("home", request.method))
+        logger.debug("function: {0} method: {1}".format("home", request.method))
         return render_template("index.html"), 200
 
 
     @app.route('/result', methods=['GET'])
     def result():
-        logger.info("function: {0} method: {1}".format("result", request.method))
+        logger.debug("function: {0} method: {1}".format("result", request.method))
         return redirect(url_for("home")), 308
 
 
     @app.route('/upload', methods=['POST', 'GET'])
     def upload_image():
-        logger.info("function: {0} method: {1}".format("upload_files", request.method))
+        logger.debug("function: {0} method: {1}".format("upload_files", request.method))
         if(request.method == 'POST'):
             
             # get elements form form
@@ -148,7 +150,7 @@ def create_app(deep_predictor_cfg_path):
 
     @app.route('/api', methods=['GET'])
     def api():
-        logger.info("function: {0} method: {1}".format("api", request.method))
+        logger.debug("function: {0} method: {1}".format("api", request.method))
 
         # get args
         arguments = request.args

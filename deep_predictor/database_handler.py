@@ -46,11 +46,12 @@ class database_handler():
         except:
             self.logger.error("", exc_info=True)
 
+
     def create_prediction(self, prediction_id, model_info, model_id):
-        """creates prediction with 100 status code"""
+        """creates prediction with 100 status code (100 is code for 'predicting')"""
         try:
             with sqlite3.connect(self.database_path) as connection:
-                self.logger.info("function: {0} param: {1}".format("create_prediction", prediction_id))
+                self.logger.debug("function: {0} param: {1}".format("create_prediction", prediction_id))
                 query = "INSERT INTO predictions(prediction_id, prediction_status, prediction, image_path, model_info, model_id, prediction_time) VALUES(?,?,?,?,?,?,?);"
                 cursor = connection.cursor()   
                 cursor.execute(query, (prediction_id, 100, '', '', str(model_info), int(model_id), 0))
@@ -61,10 +62,11 @@ class database_handler():
             self.logger.error("", exc_info=True)
     
 
+    # I don't use that but I wrote it anyways
     def delete_prediction(self, prediction_id):
         try:
             with sqlite3.connect(self.database_path) as connection:
-                self.logger.info("function: {0} param: {1}".format("delete_prediction", prediction_id))
+                self.logger.debug("function: {0} param: {1}".format("delete_prediction", prediction_id))
                 query = """DELETE FROM predictions WHERE prediction_id = ?;"""
                 cursor = connection.cursor()   
                 cursor.execute(query, (prediction_id,))
@@ -77,7 +79,7 @@ class database_handler():
         """updates successful prediction"""
         try:
             with sqlite3.connect(self.database_path) as connection:
-                self.logger.info("function: {0} prediction_id: {1}".format("update_successful_prediction", prediction_id))
+                self.logger.debug("function: {0} prediction_id: {1}".format("update_successful_prediction", prediction_id))
                 query = """ UPDATE predictions SET 
                 prediction_status = ?, 
                 prediction = ?, 
@@ -96,7 +98,7 @@ class database_handler():
         """updates failed prediction"""
         try:
             with sqlite3.connect(self.database_path) as connection:
-                self.logger.info("function: {0} param: {1}, {2}".format("update_failed_prediction", prediction_id, prediction_status))
+                self.logger.debug("function: {0} param: {1}, {2}".format("update_failed_prediction", prediction_id, prediction_status))
                 query = """ UPDATE predictions SET 
                 prediction_status = ?,
                 prediction_time = ? 
@@ -111,7 +113,7 @@ class database_handler():
     def is_prediction_exists(self, prediction_id):
         """returns true if prediction id exists on the database"""
         with sqlite3.connect(self.database_path) as connection:
-            self.logger.info("function: {0} param: {1}".format("is_prediction_exists", prediction_id))
+            self.logger.debug("function: {0} param: {1}".format("is_prediction_exists", prediction_id))
             
             query = "SELECT * FROM predictions WHERE prediction_id = ?;"
 
@@ -128,7 +130,7 @@ class database_handler():
     def get_prediction_json(self, prediction_id):
         """returns prediction information as json by using prediction id"""
         with sqlite3.connect(self.database_path) as connection:
-            self.logger.info("function: {0} param: {1}".format("get_prediction_json", prediction_id))
+            self.logger.debug("function: {0} param: {1}".format("get_prediction_json", prediction_id))
             
             query = "SELECT * FROM predictions WHERE prediction_id = ?;"
 
