@@ -5,10 +5,5 @@ waitress
 opencv-python
 pillow
 numpy
-easydict
-pandas
 requests
-selenium
-beautifulsoup4
-imagepreprocessing
 pyheif
