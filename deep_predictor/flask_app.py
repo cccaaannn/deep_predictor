@@ -37,6 +37,7 @@ def create_app(deep_predictor_cfg_path):
     supported_extensions = cfg["deep_predictor_options"]["upload_options"]["supported_extensions"]
 
     # api options
+    prediction_id_length = cfg["deep_predictor_options"]["api_options"]["prediction_id_length"]
     default_api_response = cfg["deep_predictor_options"]["api_options"]["default_api_response"]
     get_prediction_endpoint = cfg["deep_predictor_options"]["api_options"]["get_prediction_endpoint"]
     get_predictors_endpoint = cfg["deep_predictor_options"]["api_options"]["get_predictors_endpoint"]
@@ -85,7 +86,7 @@ def create_app(deep_predictor_cfg_path):
         if(request.method == 'POST'):
             
             # get elements form form
-            uploaded_file = request.files['file']
+            uploaded_file = request.files['image']
             filename = secure_filename(uploaded_file.filename)
             model_name = request.form['model_name']
             prediction_id = request.form['prediction_id']
@@ -97,6 +98,10 @@ def create_app(deep_predictor_cfg_path):
 
             if(filename == "" or prediction_id == ""):
                 logger.warning("required form elements are empty")
+                return render_template("upload.html", models=predictors.keys()), 400
+
+            if(len(prediction_id) != prediction_id_length):
+                logger.warning("prediction_id length is wrong")
                 return render_template("upload.html", models=predictors.keys()), 400
 
             # check model name

@@ -144,7 +144,8 @@ function fetch_api(){
     .then((resp) => resp.json())
     .then(function(data) {
         if(data.prediction_status === 200){
-            console.log(data)
+            console.log(data);
+            // console.log(JSON.stringify(data,null,2));
 
             // check predictor backend
             if(data.model_info.predictor_backend === "keras"){
@@ -166,6 +167,7 @@ function fetch_api(){
         }
         // prediction failed 
         else if(data.prediction_status > 200){
+            console.log(JSON.stringify(data,null,2));
             on_error();
             clearInterval(api_request_interval);
             clearTimeout(api_request_timeout);
