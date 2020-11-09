@@ -9,7 +9,7 @@ function generate_id(length) {
     return result;
  }
 
-const id = generate_id(12)
+const id = generate_id(32)
 document.getElementById("prediction_id").value = id;
 console.log("prediction_id: " + id);
 
