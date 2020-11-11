@@ -63,6 +63,40 @@ p {
 }
 
 
+/* custom indeterminate progress bar */
+.indeterminate-progress-box {
+    background-color: rgb(214, 214, 214);
+    /* box-shadow: 0px 0px 10px 0px rgba(50, 50, 50, 0.75); */
+    height: 30px;
+    border-radius: 5px;
+}
+
+.indeterminate-progress-block {
+    animation-name: bar-movement;
+    animation-play-state: running;
+
+    animation-duration: 1s;
+    /* animation-delay: 0s; */
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+
+    position: relative;
+    top: -1px;
+    left: -1px;
+    width: 25%;
+    height: 100%;
+    border-radius: 5px;
+    background: #ff3355;
+}
+
+@keyframes bar-movement {
+    from {left: -1px;}
+    to {left: calc(75% + 1px);}
+}
+
+
+
 /* button */
 .button_color{
     /* background-color: #cf0e0e !important; */
