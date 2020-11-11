@@ -1,17 +1,23 @@
 html, body {
     min-height: 100%;
     position:relative;
-
+    
+    /* background-color:#426aee; */
     /* background-color:#f17d35;*/
     background-color:#60c5ff; 
     /* background-image: linear-gradient(147deg,#ac521a 10%,#f17d35 80%); */
+    /* background-image: linear-gradient(147deg, #26da4d, #69a85d); */
 }
 
 .jumbotron {
     /* border-style:solid; */
+    /* background-color: #ff6e1b; */
     /* background-color: #228b31 ;*/
     background: #3173ff;
+    /* background-image: linear-gradient(147deg,#162a19 10%,#3a7343 80%); */
 }
+/* -------------------------------- */
+
 
 
 /* html elements */
@@ -31,6 +37,8 @@ a {
 p {
     color: white !important;
 }
+/* -------------------------------- */
+
 
 
 /* progress bar */
@@ -57,6 +65,42 @@ p {
     /* background-color: #e40000 !important; */
     background-color: #ff1332de !important;
 }
+/* -------------------------------- */
+
+
+
+/* custom indeterminate progress bar */
+.indeterminate-progress-box {
+    background-color: rgb(214, 214, 214);
+    /* box-shadow: 0px 0px 10px 0px rgba(50, 50, 50, 0.75); */
+    height: 30px;
+    border-radius: 5px;
+}
+
+.indeterminate-progress-block {
+    animation-name: bar-movement;
+    animation-play-state: running;
+
+    animation-duration: 1s;
+    /* animation-delay: 0s; */
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+
+    position: relative;
+    top: -1px;
+    left: -1px;
+    width: 25%;
+    height: 100%;
+    border-radius: 5px;
+    background: #ff3355;
+}
+
+@keyframes bar-movement {
+    from {left: -1px;}
+    to {left: calc(75% + 1px);}
+}
+/* -------------------------------- */
 
 
 /* button */
@@ -65,6 +109,8 @@ p {
     background-color: #ff3355 !important;
     color: white !important;
 }
+/* -------------------------------- */
+
 
 
 /* other stuff */
@@ -81,6 +127,8 @@ p {
 .back_button::after{
     content: "back";
 }
+/* -------------------------------- */
+
 
 
 /* mobile resizing */
@@ -98,3 +146,4 @@ p {
         font-size: 1em !important;
     }
 }
+/* -------------------------------- */
