@@ -216,18 +216,17 @@ predictor errors
 ## How it looks
 <img src="other/readme_images/main_page_example.png" alt="drawing" width="600"/>
 <img src="other/readme_images/upload_image_example.png" alt="drawing" width="600"/>
+<img src="other/readme_images/loading_example.png" alt="drawing" width="600"/> 
 
 </br>
 
 ## Results pages
-
 <img src="other/readme_images/results_example1.png" alt="drawing" width="600"/>
 <img src="other/readme_images/results_example2.png" alt="drawing" width="600"/>
 
 </br>
 
 ## Mobile
-
-<img src="other/readme_images/main_page_mobile_example.png" alt="drawing" width="200"/> <img src="other/readme_images/upload_image_mobile_example.png" alt="drawing" width="200"/> <img src="other/readme_images/results_mobile_example.png" alt="drawing" width="200"/>
+<img src="other/readme_images/main_page_mobile_example.png" alt="drawing" width="200"/> <img src="other/readme_images/upload_image_mobile_example.png" alt="drawing" width="200"/> <img src="other/readme_images/loading_mobil_example.png" alt="drawing" width="200"/> <img src="other/readme_images/results_mobile_example.png" alt="drawing" width="200"/>
 
 </br>
