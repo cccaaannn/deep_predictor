@@ -115,7 +115,7 @@ def create_app(deep_predictor_cfg_path):
                 abort(400, description="prediction id exists")
 
             # check image extension
-            if(not image_operations.validate_extension(supported_extensions, filename, is_case_sensitive=True)):
+            if(not image_operations.validate_extension(supported_extensions, filename, is_case_sensitive=False)):
                 logger.warning("image extension is not supported")
                 abort(400, description="image extension is not supported")
 

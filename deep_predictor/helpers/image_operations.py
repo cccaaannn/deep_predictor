@@ -14,14 +14,14 @@ from PIL import Image
 
 class image_operations():
     @staticmethod
-    def validate_extension(possible_extensions, image_name, is_case_sensitive=True):
+    def validate_extension(possible_extensions, image_name, is_case_sensitive=False):
         """validates extension"""
         _ , ext = os.path.splitext(image_name)
 
         # delete the dot
         ext = ext[1::]
         
-        if(is_case_sensitive):
+        if(not is_case_sensitive):
             ext = ext.lower()
 
         if(ext not in possible_extensions):
