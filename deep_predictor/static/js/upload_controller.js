@@ -1,3 +1,8 @@
+const form = document.getElementById("image-form");
+
+form.addEventListener("submit", post_form);
+
+
 // generate prediction_id
 function generate_id(length) {
     var result           = '';
@@ -9,10 +14,12 @@ function generate_id(length) {
     return result;
  }
 
-const id = generate_id(32)
-document.getElementById("prediction_id").value = id;
-console.log("prediction_id: " + id);
-
+// generate the id when form is sent
+function post_form(e){
+    const id = generate_id(32)
+    document.getElementById("prediction_id").value = id;
+    console.log("prediction_id: " + id);
+}
 
 // file input text change
 $(".custom-file-input").on("change", function() {
