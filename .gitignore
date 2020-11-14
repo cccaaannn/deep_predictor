@@ -7,6 +7,8 @@ my_bot_key.py
 venv
 deep_predictor/images/predictions/
 deep_predictor/images/temp/
+mail_info.py
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
