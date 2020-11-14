@@ -7,7 +7,7 @@ import os
 
 
 class stress_generator():
-    def __init__(self, id_prefix="TEST", id_size=12, url='http://127.0.0.1:5000/upload', test_image_folder="test/test_images/food/asure", model_names=["food 10 vgg16", "food 10 densenet", "food 10 vgg16 2"]):
+    def __init__(self, id_prefix, id_size, url, test_image_folder, model_names):
         self.id_prefix = id_prefix
         self.id_size = id_size
         self.url = url
@@ -26,7 +26,7 @@ class stress_generator():
     def __make_request(self):
         prediction_id = self.__id_generator()
 
-        files = {'file': open(self.__pick_random_image(), 'rb')}
+        files = {'image': open(self.__pick_random_image(), 'rb')}
         data = {'model_name': self.__pick_random_model(), 'prediction_id': prediction_id}
 
         requests.post(url, files=files, data=data)
@@ -42,12 +42,12 @@ class stress_generator():
 
 if __name__ == "__main__":
     id_prefix = "TEST" 
-    id_size = 12
-    url = 'http://127.0.0.1:5000/upload'
+    id_size = 28
+    url = 'http://127.0.0.1:5000/test-upload'
     # test_image_folder = "test_images/other"
     test_image_folder = "test_images/food"
 
-    model_names_json = json.loads(requests.get('http://127.0.0.1:5000/api?predictors').text)
+    model_names_json = json.loads(requests.get('http://127.0.0.1:5000/test-api?predictors').text)
     model_names = model_names_json["predictors"]
 
     workers = 10
