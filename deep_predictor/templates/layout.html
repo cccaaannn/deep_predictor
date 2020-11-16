@@ -21,6 +21,11 @@
             window.jQuery || document.write("<script src = \"{{ url_for('static',filename='libs/jquery-3.3.1.js') }}\"><\/script>");
         </script>
 
+        <!-- head block -->
+        {% block head %}
+        
+        {% endblock head %}
+
         <title>Deep predictor</title>
     </head>
     <body>
