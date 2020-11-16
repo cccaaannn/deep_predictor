@@ -54,7 +54,7 @@ class database_handler():
                 self.logger.debug("function: {0} param: {1}".format("create_prediction", prediction_id))
                 query = "INSERT INTO predictions(prediction_id, prediction_status, prediction, image_path, model_info, model_id, prediction_time) VALUES(?,?,?,?,?,?,?);"
                 cursor = connection.cursor()   
-                cursor.execute(query, (prediction_id, 100, '', '', str(model_info), int(model_id), 0))
+                cursor.execute(query, (prediction_id, 100, '', '', str(model_info), int(model_id), int(time.time())))
                 connection.commit()
         except sqlite3.IntegrityError:
             self.logger.error("most likely you are trying to write douplicate of a unique field", exc_info=True)
