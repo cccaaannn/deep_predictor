@@ -1,5 +1,12 @@
 {% extends "layout.html" %}
 
+
+{% block head %}
+    <!-- recaptcha -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script> 
+{% endblock head %}
+
+
 {% block body %}
 
 <div class="jumbotron jumbotron-fluid">
@@ -7,41 +14,47 @@
     <!-- text comes from css -->
     <a class="btn button_color back_button" href="/" role="button"></a>
 
-  <div class="center_div">
-
-    <h1>Test Your Image</h1>
-    
-    <form method="POST" action="" enctype="multipart/form-data" id="image-form">
-
-        <div class="custom-file">
-            <input type="file" name="image" class="custom-file-input" id="customFile" accept=".jpg,.jpeg,.png" >
-            <label class="custom-file-label" for="customFile">Choose image</label>
+  <div class="center_div" id="center_div">
+        <div id="header_div">
+            <h1>Test Your Image</h1>
         </div>
 
-        <p><input type="hidden" name="prediction_id" id="prediction_id"></p>
-        <p><input type="hidden" name="model_name" id="model_name"></p>
+        <form method="POST" action="" enctype="multipart/form-data" id="image-form">
 
-        <div class="row">
-            <div class="col-10">
-                <div class="dropdown">
-                    <button class="btn button_color dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
-                        {{models[0]}}
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        {% for model in models %}
-                            <a class="dropdown-item">{{model}}</a>
-                        {% endfor %}
+            <div class="custom-file" id="file_chooser">
+                <input type="file" name="image" class="custom-file-input" id="customFile" accept=".jpg,.jpeg,.png" required>
+                <label class="custom-file-label" for="customFile">Choose image</label>
+            </div>
+
+            </br></br>
+            
+            <div class="g-recaptcha" id="recaptcha" data-sitekey={{ recaptcha_sitekey }}></div>
+            <!-- <p><input type="hidden" name="api_key" id="api_key"></p> -->
+
+            <p><input type="hidden" name="prediction_id" id="prediction_id"></p>
+            <p><input type="hidden" name="model_name" id="model_name"></p>
+
+            <div class="row">
+                <div class="col-10">
+                    <div class="dropdown" id="dropdown">
+                        <button class="btn button_color dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+                            {{models[0]}}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            {% for model in models %}
+                                <a class="dropdown-item">{{model}}</a>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
+
+                <div class="col-2">
+                    <input type="submit" name="submit_button" id="submit_button" value="Predict" class="btn button_color float-right">
+                </div>
+
             </div>
 
-            <div class="col-2">
-                <input type="submit" value="Predict" class="btn button_color float-right">
-            </div>
-
-        </div>
-
-    </form>
+        </form>
   </div>
 
 </div>

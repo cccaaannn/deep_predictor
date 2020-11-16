@@ -8,7 +8,7 @@ venv
 deep_predictor/images/predictions/
 deep_predictor/images/temp/
 mail_info.py
-
+recaptcha_keys.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
