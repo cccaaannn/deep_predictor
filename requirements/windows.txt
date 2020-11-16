@@ -5,4 +5,3 @@ waitress
 opencv-python
 pillow
 numpy
-requests
