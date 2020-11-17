@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+    <div class="jumbotron error_jumbotron">
+        <div class="center_div">
+            <div class="center_error">
+                <h1>{{ code }}</h1>
+                <h2>{{ description }}</h2>
+                </br>
+                <a class="btn button_error float-left" href="/" role="button">Home</a>
+                <a class="btn button_error float-right" href="/upload" role="button">Test your image</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}
