@@ -16,8 +16,35 @@ html, body {
     background: #3173ff;
     /* background-image: linear-gradient(147deg,#162a19 10%,#3a7343 80%); */
 }
+
+.center_div {
+    margin: 0 auto;
+    width:70%
+}
+
 /* -------------------------------- */
 
+
+
+/* error pages */
+.error_jumbotron {
+    background: #ff3e3e;
+}
+
+.center_error {
+    text-align: center;
+}
+
+.button_error{
+    background-color: #4f87ff !important;
+    color: white !important;
+}
+
+.button_error:hover{
+    background-color: white !important;
+    color:#4f87ff !important;
+}
+/* -------------------------------- */
 
 
 /* html elements */
@@ -109,15 +136,33 @@ p {
     background-color: #ff3355 !important;
     color: white !important;
 }
+.button_color:hover{
+    background-color: white !important;
+    color:#ff3355 !important;
+}
+
 /* -------------------------------- */
 
 
-
-/* other stuff */
-.center_div {
-    margin: 0 auto;
-    width:70%
+/* recaptcha */
+#g-recaptcha-response {
+    display: block !important;
+    position: absolute;
+    margin: -78px 0 0 0 !important;
+    width: 302px !important;
+    height: 76px !important;
+    z-index: -999999;
+    opacity: 0;
 }
+
+.g-recaptcha {
+    transform:scale(0.85);
+    transform-origin:0 0;
+}
+/* -------------------------------- */
+
+
+/* mobile resizing */
 
 .back_button{
     margin-left: 10px;
@@ -127,11 +172,7 @@ p {
 .back_button::after{
     content: "back";
 }
-/* -------------------------------- */
 
-
-
-/* mobile resizing */
 @media (max-width: 575px){
     .back_button{
         margin-top: -40px;
@@ -146,4 +187,5 @@ p {
         font-size: 1em !important;
     }
 }
+
 /* -------------------------------- */
