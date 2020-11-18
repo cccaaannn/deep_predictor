@@ -89,6 +89,7 @@ api_key = "4c98a83efe384b53b1db01516907cabb"
 prediction_gen = prediction_generator(id_prefix, id_size, test_image_folder, api_key)
 
 
+# mail info
 from mail_info import sender_mail, sender_password, receiver_mail
 mail_info = {"sender_mail":sender_mail, "sender_password":sender_password, "receiver_mail":receiver_mail}
 
