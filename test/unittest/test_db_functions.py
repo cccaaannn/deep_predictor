@@ -14,12 +14,14 @@ class test_prediction_db_functions(unittest.TestCase):
         self.model_info = {'predictor_backend': 'keras', 'method': 'vgg16', 'model_id': 100}
         self.model_id = 100
         self.failed_prediction_status = 500
+        self.prediction_time = 0.555
 
         self.db_path = "test/unittest/database/unittest_database.db"
 
     def test_successful_prediction(self):
         db = database_handler(self.db_path)
         self.assertIsNotNone(db)
+        db.create_table_if_not_exists()
 
         status = db.is_prediction_exists(self.prediction_id)
         self.assertFalse(status)
@@ -29,15 +31,17 @@ class test_prediction_db_functions(unittest.TestCase):
         status = db.is_prediction_exists(self.prediction_id)
         self.assertTrue(status)
 
-        db.update_successful_prediction(self.prediction_id, self.prediction, self.image_path)
+        db.update_successful_prediction(self.prediction_id, self.prediction, self.image_path, self.prediction_time)
 
         pred_json = db.get_prediction_json(self.prediction_id)
         self.assertEqual(pred_json["prediction_status"], 200) 
         self.assertNotEqual(pred_json["predictions"], "")
+        self.assertEqual(pred_json["prediction_time"], 0.555)
 
     def test_failed_prediction(self):
         db = database_handler(self.db_path)
         self.assertIsNotNone(db)
+        db.create_table_if_not_exists()
 
         status = db.is_prediction_exists(self.prediction_id)
         self.assertFalse(status)
@@ -47,11 +51,12 @@ class test_prediction_db_functions(unittest.TestCase):
         status = db.is_prediction_exists(self.prediction_id)
         self.assertTrue(status)
 
-        db.update_failed_prediction(self.prediction_id, self.failed_prediction_status)
+        db.update_failed_prediction(self.prediction_id, self.failed_prediction_status, self.prediction_time)
 
         pred_json = db.get_prediction_json(self.prediction_id)
         self.assertEqual(pred_json["prediction_status"], 500) 
         self.assertEqual(pred_json["predictions"], "")
+        self.assertEqual(pred_json["prediction_time"], 0.555)
 
 class test_other_db_functions(unittest.TestCase):
 
@@ -65,6 +70,7 @@ class test_other_db_functions(unittest.TestCase):
     def test_delete_prediction(self):
         db = database_handler(self.db_path)
         self.assertIsNotNone(db)
+        db.create_table_if_not_exists()
 
         status = db.is_prediction_exists(self.prediction_id)
         self.assertFalse(status)
