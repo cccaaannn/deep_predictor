@@ -1,7 +1,8 @@
-tensorflow==2.2.1
+# tensorflow==2.2.1
+tensorflow==2.4.0rc2
 keras==2.4.3
-flask
-waitress
-opencv-python
-pillow
-numpy
+Flask==1.1.2
+waitress==1.4.4
+opencv-python==4.4.0.44
+Pillow==8.0.0
+numpy==1.19.2
