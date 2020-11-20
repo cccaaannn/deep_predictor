@@ -78,6 +78,7 @@ p {
 .chart_text{
     color: Black !important;
     font-weight: bold !important;
+    margin-top:8px !important;
 }
 
 .progress_1 {
