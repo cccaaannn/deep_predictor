@@ -18,7 +18,10 @@ class prediction_generator():
         # get test model name from api
         if(not model_names):
             model_names_json = json.loads(requests.get(self.predictors_url).text)
-            model_names = model_names_json["predictors"]
+            model_names_array = model_names_json["predictors"]
+            model_names = []
+            for model_name in model_names_array:
+                model_names.append(model_name["model_name"])
         self.model_names = model_names
 
     def __id_generator(self, chars=string.ascii_letters + string.digits):
