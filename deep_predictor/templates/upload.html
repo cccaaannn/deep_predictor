@@ -31,28 +31,21 @@
             <div class="g-recaptcha" id="recaptcha" data-sitekey={{ recaptcha_sitekey }}></div>
             <!-- <p><input type="hidden" name="api_key" id="api_key"></p> -->
 
-            <p><input type="hidden" name="prediction_id" id="prediction_id"></p>
-            <p><input type="hidden" name="model_name" id="model_name"></p>
-
-            <div class="row">
-                <div class="col-10">
-                    <div class="dropdown" id="dropdown">
-                        <button class="btn button_color dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
-                            {{models[0]}}
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            {% for model in models %}
-                                <a class="dropdown-item">{{model}}</a>
-                            {% endfor %}
-                        </div>
-                    </div>
+            <div class="dropdown" id="dropdown">  
+                <button class="btn button_color dropdown-toggle float-left" type="button" id="dropdownMenuButton" data-toggle="dropdown"> 
+                    <!-- {{ models['frontend_name'] }} -->
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    {% for model in models %}
+                        <a class="dropdown-item" id={{ model['model_name'] }}>{{ model["frontend_name"] }}</a>
+                    {% endfor %}
                 </div>
-
-                <div class="col-2">
-                    <input type="submit" name="submit_button" id="submit_button" value="Predict" class="btn button_color float-right">
-                </div>
-
             </div>
+            <input type="hidden" name="prediction_id" id="prediction_id">
+            <input type="hidden" name="model_name" id="model_name">
+            </br> </br>
+            <input type="submit" name="submit_button" id="submit_button" value="Predict" class="btn button_color float-right btn-lg">
+            </br>
 
         </form>
   </div>

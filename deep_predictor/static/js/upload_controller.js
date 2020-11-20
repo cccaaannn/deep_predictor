@@ -51,7 +51,7 @@ function post_form(e){
 // on dom load
 $('document ').ready(function(){    
     $('.dropdown-toggle').html($('.dropdown-menu a').html());
-    $('#model_name').val($('.dropdown-menu a').html());
+    $('#model_name').val($('.dropdown-menu a').attr('id'));
 })
 
 // file input text change
@@ -63,5 +63,5 @@ $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
 // on dropdown change
 $('.dropdown-menu a').on('click', function(){    
     $('.dropdown-toggle').html($(this).html());
-    $('#model_name').val($(this).html());
+    $('#model_name').val($(this).attr('id'));
 })

@@ -70,7 +70,7 @@ class flask_app():
         self.__default_predictor_name = cfg["deep_predictor_options"]["production"]["prediction_options"]["default_predictor_name"]
 
         # predictor cfg paths
-        self.__predictor_cfgs = cfg["deep_predictor_options"]["test"]["prediction_options"]["predictors"]
+        self.__predictor_cfgs = cfg["deep_predictor_options"]["production"]["prediction_options"]["predictors"]
 
         # --------------------------------------------------
 
@@ -91,26 +91,41 @@ class flask_app():
         self.__TEST_database_path = cfg["deep_predictor_options"]["test"]["path_options"]["database_path"]
 
         # predictor cfg paths
-        self.__TEST_predictor_cfgs = cfg["deep_predictor_options"]["production"]["prediction_options"]["predictors"]
+        self.__TEST_predictor_cfgs = cfg["deep_predictor_options"]["test"]["prediction_options"]["predictors"]
 
         # --------------------------------------------------
 
 
     def __init_predictors(self):
-        """creates predictors"""
+        """creates predictors
+        __model_names, __TEST_model_names: ["model1", "model2"]
+        __predictors_info: [{'frontend_name': 'a', 'model_name': 'aa'},{'frontend_name': 'b', 'model_name': 'bb'}]
+        __TEST_predictors_info: [{'model_name': 'aa'},{'model_name': 'bb'}]
+        __predictors, __TEST_predictors: {"model_name":<predictor_object>,"model_name":<predictor_object>}
+        """
 
+        self.__model_names = []
+        self.__predictors_info = []
         self.__predictors = {}
-        for predictor in self.__TEST_predictor_cfgs:
+        for predictor in self.__predictor_cfgs:
             self.__predictors.update({
-                predictor : deep_predictor(self.__TEST_predictor_cfgs[predictor])
+                predictor["model_name"] : deep_predictor(predictor["cfg_path"])
             })
 
+            self.__model_names.append(predictor["model_name"])
+            self.__predictors_info.append({'frontend_name': predictor["frontend_name"], 'model_name': predictor["model_name"]})
+
+        self.__TEST_model_names = []
+        self.__TEST_predictors_info = []
         self.__TEST_predictors = {}
-        for predictor in self.__predictor_cfgs:
+        for predictor in self.__TEST_predictor_cfgs:
             self.__TEST_predictors.update({
-                predictor : deep_predictor(self.__predictor_cfgs[predictor])
+                predictor["model_name"] : deep_predictor(predictor["cfg_path"])
             })
- 
+
+            self.__TEST_model_names.append(predictor["model_name"])
+            self.__TEST_predictors_info.append({'model_name': predictor["model_name"]})
+
     def __connect_db(self):
         """creates instace of db class"""
         self.__db = database_handler(database_path = self.__database_path, check_connection = True, create_table = True)
@@ -150,7 +165,7 @@ class flask_app():
         def upload():
             self.__logger.debug("function: {0} method: {1}".format("upload", request.method))
             if(request.method == 'POST'):
-    
+
                 # ---------- check key errors from form ----------
                 try:
                     uploaded_file = request.files['image']
@@ -175,7 +190,7 @@ class flask_app():
                     # check recaptcha
                     if(not self.__validate_recaptcha(recaptcha_response, self.recaptcha_secret_key)):
                         self.__logger.warning("recaptcha is not verified")
-                        return render_template("upload.html", models=self.__predictors.keys(), recaptcha_sitekey=self.__recaptcha_sitekey), 400
+                        return render_template("upload.html", models=self.__predictors_info, recaptcha_sitekey=self.__recaptcha_sitekey), 400
                 else:
                     self.__logger.warning("recaptcha or api key is not provided")
                     abort(400, description="Recaptcha or api key is not provided")
@@ -187,7 +202,7 @@ class flask_app():
 
                 if(filename == "" or prediction_id == ""):
                     self.__logger.warning("required form elements are empty")
-                    return render_template("upload.html", models=self.__predictors.keys(), recaptcha_sitekey=self.__recaptcha_sitekey), 400
+                    return render_template("upload.html", models=self.__predictors_info, recaptcha_sitekey=self.__recaptcha_sitekey), 400
 
                 # prediction_id length
                 if(len(prediction_id) != self.__prediction_id_length):
@@ -195,7 +210,7 @@ class flask_app():
                     abort(400, description="Something went wrong please try again")
 
                 # model name
-                if(model_name not in self.__predictors):
+                if(model_name not in self.__model_names):
                     self.__logger.warning("model name is not exists")
                     abort(400, description="This predictor is not exists")
 
@@ -241,7 +256,7 @@ class flask_app():
 
                 return render_template("result.html", prediction_id=prediction_id), 201
             else:
-                return render_template("upload.html", models=self.__predictors.keys(), recaptcha_sitekey=self.__recaptcha_sitekey), 200
+                return render_template("upload.html", models=self.__predictors_info, recaptcha_sitekey=self.__recaptcha_sitekey), 200
 
         @app.route('/api', methods=['GET'])
         def api():
@@ -256,7 +271,7 @@ class flask_app():
                 return prediction, 200
 
             elif(self.__get_predictors_endpoint in arguments):
-                return {self.__get_predictors_endpoint : list(self.__predictors.keys())}, 200
+                return {self.__get_predictors_endpoint : self.__predictors_info}, 200
 
             else:
                 self.__logger.warning("prediction_id is not provided")
@@ -299,7 +314,7 @@ class flask_app():
                     abort(400, description="Something went wrong please try again")
 
                 # model name
-                if(model_name not in self.__TEST_predictors):
+                if(model_name not in self.__TEST_model_names):
                     self.__logger.warning("model name is not exists")
                     abort(400, description="This predictor is not exists")
 
@@ -358,7 +373,7 @@ class flask_app():
                 return prediction, 200
 
             elif(self.__TEST_get_predictors_endpoint in arguments):
-                return {self.__TEST_get_predictors_endpoint : list(self.__TEST_predictors.keys())}, 200
+                return {self.__TEST_get_predictors_endpoint : self.__TEST_predictors_info}, 200
 
             else:
                 self.__logger.warning("prediction_id is not provided")
