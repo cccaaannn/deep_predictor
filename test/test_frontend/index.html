@@ -17,7 +17,7 @@
             crossorigin = "anonymous">
         </script>
 
-
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script> 
 
     </head>
     <body>
@@ -44,40 +44,37 @@
                 <a class="btn button_color back_button" href="/" role="button"></a>
             
               <div class="center_div">
-            
+
                 <h1>Test Your Image</h1>
-                
+
                 <form action="" enctype="multipart/form-data" id="image-form">
-            
+
                     <div class="custom-file">
                         <input type="file" name="file" class="custom-file-input" id="customFile" accept=".jpg,.jpeg,.png" >
                         <label class="custom-file-label" for="customFile">Choose image</label>
                     </div>
-            
-                    <p><input type="hidden" name="prediction_id" id="prediction_id"></p>
-                    <p><input type="hidden" name="model_name" id="model_name"></p>
-            
-                    <div class="row">
-                        <div class="col-10">
-                            <div class="dropdown">
-                                <button class="btn button_color dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
-                                    predictors
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item">vgg16</a>
-                                </div>
-                            </div>
+
+                    </br></br>
+                    
+                    <div class="g-recaptcha" id="recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+
+                    <div class="dropdown">
+                        <button class="btn button_color dropdown-toggle float-left" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+                            vgg
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item">vgg16</a>
+                            <a class="dropdown-item">aaaaaaaa aaaaaaaaaaaaaa aaaaaaaaaaaa</a>
                         </div>
-            
-                        <div class="col-2">
-                            <input type="submit" value="Predict" class="btn button_color float-right">
-                        </div>
-            
                     </div>
-            
+                    <input type="hidden" name="prediction_id" id="prediction_id">
+                    <input type="hidden" name="model_name" id="model_name">
+                </br> </br>
+                    <input type="submit" value="Predict" class="btn button_color btn-lg float-right">
+                    </br>
                 </form>
               </div>
-            
+
             </div>
 
 
@@ -119,8 +116,8 @@
                 <div class="center_div">
             
                     <div id="header_div">
-                        <h1>Prediction results</h1>
-                        </br>
+                        <h1>Detection results</h1>
+                        <p>3 unique object(s) found </br> Prediction took 0.531s</p>
                         <h2>muz</h2>
                         <div class="progress">
                             <div class="progress-bar progress_1 progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
@@ -169,12 +166,15 @@
                         <a class="btn button_error float-right" href="/" role="button">Test your image</a>
                     </div>
                 </div>
+            </br>
             </div>
-
+            
 
         </div>
 
     </body>
+
+
 
     <script src = "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" 
         integrity = "sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" 
@@ -185,5 +185,15 @@
         integrity = "sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" 
         crossorigin = "anonymous">
     </script>
+
+
+
+
+    <script>
+        $('.dropdown-menu a').on('click', function(){    
+            $('.dropdown-toggle').html($(this).html());
+        })
+    </script>
+
 </html>
 
