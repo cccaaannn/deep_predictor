@@ -58,11 +58,11 @@
 1. Create a cfg file for the new model with using cfg template under `cfg/predictor/templates`. [supported deep learning backends](#Supported-deep-learning-backends)
 2. Fill the fields in the cfg template according to specifications of the new model.
 3. Find a frontend name for your model.
-4. Make a `"name":"cfg_path"` combination for your model and add it to `"production":"prediction_options":"predictors"` field inside `deep_predictor.cfg`. [full example below](#Full-example-from-`deep_predictor.cfg`)
+4. Put those information together in the format shown below. [full example below](#Full-example-from-`deep_predictor.cfg`)
 5. Chose a default predictor and set `default_predictor_name`.
     - Default predictor will run if the `model_name` field is posted empty from the frontend.
 
-- For adding a model to [test api](#Test-api) just add your models `"name":"cfg_path"` combination to `"test":"prediction_options":"predictors"` field inside `deep_predictor.cfg`. [full example below](#Full-example-from-`deep_predictor.cfg`) 
+- Don't use spaces in `model_name` and `default_predictor_name` fields.
 
 **Deep predictor runs all models added under predictors.**
 
@@ -73,20 +73,39 @@
 .
   "prediction_options":{
       "default_predictor_name" : "vgg16",
-      "predictors" : {
-          "vgg16" : "deep_predictor/cfg/predictors/vgg16.cfg",
-          "densenet" : "deep_predictor/cfg/predictors/densenet201.cfg"
-      }
+        "predictors" : [
+            {
+                "frontend_name":"food 10",
+                "model_name":"food-10",
+                "cfg_path":"deep_predictor/cfg/predictors/keras/vgg16_food10.cfg"
+            },
+            {
+                "frontend_name":"food 300",
+                "model_name":"food-300",
+                "cfg_path":"deep_predictor/cfg/predictors/tf_yolo/food300.cfg"
+            },
+            {
+                "frontend_name":"common objects",
+                "model_name":"common-objects",
+                "cfg_path":"deep_predictor/cfg/predictors/tf_yolo/ms_coco.cfg"
+            }
+        ]
   }
 }
 "test" : {
 .
 .
   "prediction_options":{
-      "predictors" : {
-          "vgg16" : "deep_predictor/cfg/predictors/test_predictors/vgg16.cfg",
-          "densenet" : "deep_predictor/cfg/predictors/test_predictors/densenet201.cfg"
-      }
+    "predictors" : [
+        {
+            "model_name":"vgg16-food-10-test",
+            "cfg_path":"deep_predictor/cfg/predictors/test_predictors/vgg16_test.cfg"
+        },
+        {
+            "model_name":"tf_yolo-food-300-test",
+            "cfg_path":"deep_predictor/cfg/predictors/test_predictors/food300_test.cfg"
+        }
+    ]
   }
 }
 ```
@@ -223,16 +242,26 @@ To make a custom frontend
 ```
 
 
-#### Predictors result example
+### Predictors result example
+#### /api?predictors
 ```json
 {
-  "predictors": [
-    "vgg16",
-    "ms coco"
-  ]
+  "predictors":[
+      {"frontend_name":"food 10","model_name":"food-10"},
+      {"frontend_name":"food 300","model_name":"food-300"},
+      {"frontend_name":"common objects","model_name":"common-objects"}
+    ]
 }
 ```
-
+#### /test-api?predictors
+```json
+{
+  "predictors":[
+      {"model_name":"vgg16-food-10-test"},
+      {"model_name":"tf_yolo-food-300-test"}
+    ]
+}
+```
 
 #### Prediction status codes
 ```
@@ -272,19 +301,19 @@ predictor errors
 </br>
 
 ## How it looks
-<img src="other/readme_images/main_page_example.png" alt="drawing" width="600"/>
-<img src="other/readme_images/upload_image_example.png" alt="drawing" width="600"/>
-<img src="other/readme_images/loading_example.png" alt="drawing" width="600"/> 
+<img src="other/readme_images/desktop/1.png" alt="drawing" width="600"/>
+<img src="other/readme_images/desktop/2.png" alt="drawing" width="600"/>
+<img src="other/readme_images/desktop/3.png" alt="drawing" width="600"/> 
 
 </br>
 
 ## Results pages
-<img src="other/readme_images/results_example1.png" alt="drawing" width="600"/>
-<img src="other/readme_images/results_example2.png" alt="drawing" width="600"/>
+<img src="other/readme_images/desktop/4.png" alt="drawing" width="600"/>
+<img src="other/readme_images/desktop/5.png" alt="drawing" width="600"/>
 
 </br>
 
 ## Mobile
-<img src="other/readme_images/main_page_mobile_example.png" alt="drawing" width="200"/> <img src="other/readme_images/upload_image_mobile_example.png" alt="drawing" width="200"/> <img src="other/readme_images/loading_mobil_example.png" alt="drawing" width="200"/> <img src="other/readme_images/results_mobile_example.png" alt="drawing" width="200"/>
+<img src="other/readme_images/mobile/1.png" alt="drawing" width="200"/> <img src="other/readme_images/mobile/2.png" alt="drawing" width="200"/> <img src="other/readme_images/mobile/3.png" alt="drawing" width="200"/> <img src="other/readme_images/mobile/4.png" alt="drawing" width="200"/>
 
 </br>
