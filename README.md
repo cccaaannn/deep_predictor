@@ -247,9 +247,18 @@ To make a custom frontend
 ```json
 {
   "predictors":[
-      {"frontend_name":"food 10","model_name":"food-10"},
-      {"frontend_name":"food 300","model_name":"food-300"},
-      {"frontend_name":"common objects","model_name":"common-objects"}
+      { 
+        "frontend_name": "Detect food", 
+        "model_name": "food-300-tf_yolo" 
+      },
+      { 
+        "frontend_name": "Classify food", 
+        "model_name": "food-300-densenet" 
+      },
+      { 
+        "frontend_name": "Detect common objects", 
+        "model_name": "common-objects" 
+      }
     ]
 }
 ```
@@ -257,8 +266,12 @@ To make a custom frontend
 ```json
 {
   "predictors":[
-      {"model_name":"vgg16-food-10-test"},
-      {"model_name":"tf_yolo-food-300-test"}
+      { 
+        "model_name": "vgg16-food-10-test" 
+      },
+      { 
+        "model_name": "tf_yolo-food-300-test" 
+      }
     ]
 }
 ```
