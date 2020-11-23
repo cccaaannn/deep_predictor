@@ -1,55 +1,20 @@
+/* general */
 html, body {
     min-height: 100%;
     position:relative;
-    
-    /* background-color:#426aee; */
-    /* background-color:#f17d35;*/
     background-color:#60c5ff; 
-    /* background-image: linear-gradient(147deg,#ac521a 10%,#f17d35 80%); */
-    /* background-image: linear-gradient(147deg, #26da4d, #69a85d); */
-}
-
-.jumbotron {
-    /* border-style:solid; */
-    /* background-color: #ff6e1b; */
-    /* background-color: #228b31 ;*/
-    background: #3173ff;
-    /* background-image: linear-gradient(147deg,#162a19 10%,#3a7343 80%); */
 }
 
 .center_div {
     margin: 0 auto;
     width:70%
 }
-
-/* -------------------------------- */
-
-
-
-/* error pages */
-.error_jumbotron {
-    background: #ff3e3e;
-}
-
-.center_error {
-    text-align: center;
-}
-
-.button_error{
-    background-color: #4f87ff !important;
-    color: white !important;
-}
-
-.button_error:hover{
-    background-color: white !important;
-    color:#4f87ff !important;
-}
 /* -------------------------------- */
 
 
 /* html elements */
 h1 {
-    font-size: 4em;
+    font-size: 3.5em;
     color: white;
 }
 
@@ -62,39 +27,37 @@ a {
 }
 
 p {
-    color: white !important;
+    color: white;
 }
 /* -------------------------------- */
-
 
 
 /* progress bar */
 .progress {
     height: 30px;
     position: relative;
-    background-color: #ffffff !important;
+    background-color: #ffffff;
 }
 
 .chart_text{
-    color: Black !important;
-    font-weight: bold !important;
-    margin-top:8px !important;
+    color: Black;
+    font-weight: bold;
+    margin-top:8px;
 }
 
 .progress_1 {
     /* background-color: #3ea800 !important; */
-    background-color: #00d841 !important;
+    background-color: #00d841;
 }
 .progress_2 {
     /* background-color: #cfc100 !important; */
-    background-color: #ff9100 !important;
+    background-color: #ff9100;
 }
 .progress_3 {
     /* background-color: #e40000 !important; */
-    background-color: #ff1332de !important;
+    background-color: #ff1332de;
 }
 /* -------------------------------- */
-
 
 
 /* custom indeterminate progress bar */
@@ -131,18 +94,117 @@ p {
 /* -------------------------------- */
 
 
-/* button */
-.button_color{
-    /* background-color: #cf0e0e !important; */
-    background-color: #ff3355 !important;
-    color: white !important;
+/* jumbotrons */
+.home_page_jumbotron{
+    background: #3173ff;
 }
-.button_color:hover{
-    background-color: white !important;
-    color:#ff3355 !important;
+.upload_page_jumbotron{
+    background: #3173ff;
+    padding-bottom: 80px;
+}
+.result_page_jumbotron {
+    background: #3173ff;
+}
+/* -------------------------------- */
+
+
+/* buttons */
+/* home page */
+.home_page_button{
+    background-color: #ff3355;
+    color: white;
+
+    font-size: 1.5em;
+}
+.home_page_button:hover{
+    background-color: white;
+    color:#ff3355;
+}
+
+/* upload page */
+.upload_page_back_button{
+    background-color: #ff3355;
+    color: white;
+
+    margin-left: 10px;
+    margin-top: -100px;
+}
+.upload_page_back_button:hover{
+    background-color: white;
+    color:#ff3355;
+}
+.upload_page_back_button::after{
+    content: "back";
+}
+
+.upload_page_dropdown_button{
+    background-color: #ff3355;
+    color: white;
+}
+.upload_page_dropdown_button:hover{
+    background-color: white;
+    color:#ff3355;
+}
+.upload_page_predict_button{
+    background-color: #ff3355;
+    color: white;
+
+    font-size: 1.3em;
+}
+.upload_page_predict_button:hover{
+    background-color: white;
+    color:#ff3355;
+}
+
+/* result page */
+.result_page_home_button{
+    background-color: #ff3355;
+    color: white;
+}
+.result_page_home_button:hover{
+    background-color: white;
+    color:#ff3355;
+}
+.result_page_try_another_button{
+    background-color: #ff3355;
+    color: white;
+}
+.result_page_try_another_button:hover{
+    background-color: white;
+    color:#ff3355;
 }
 
 /* -------------------------------- */
+
+
+
+/* error pages */
+.error_page_jumbotron {
+    background: #ff3e3e;
+}
+
+.center_error_Text {
+    text-align: center;
+}
+
+.error_page_home_button{
+    background-color: #4f87ff;
+    color: white;
+}
+.error_page_home_button:hover{
+    background-color: white;
+    color:#4f87ff;
+}
+.error_page_try_another_button{
+    background-color: #4f87ff;
+    color: white;
+}
+.error_page_try_another_button:hover{
+    background-color: white;
+    color:#4f87ff;
+}
+/* -------------------------------- */
+
 
 
 /* recaptcha */
@@ -163,30 +225,124 @@ p {
 /* -------------------------------- */
 
 
+
 /* mobile resizing */
-
-.back_button{
-    margin-left: 10px;
-    margin-top: -100px;
-}
-
-.back_button::after{
-    content: "back";
-}
-
-@media (max-width: 575px){
-    .back_button{
-        margin-top: -40px;
-    }
-    .back_button::after{
-        content: "<";
-    }
+@media (max-width: 575px) and (min-width: 360px){
     h1{
-        font-size: 1.7em !important;
+        font-size: 1.9em;
     }
     h2{
-        font-size: 1em !important;
+        font-size: 1em;
+    }
+    h5{
+        font-size: 1.5em;
+    }
+    p {
+        font-size: 1em;
+    }
+
+    .upload_page_back_button{
+        margin-top: -40px;
+    }
+    .upload_page_back_button::after{
+        content: "<";
+    }
+    .upload_page_dropdown_div{
+        margin-bottom: 50px;
+    }
+    .upload_page_jumbotron{
+        padding-bottom: 70px;
+    }
+
+    .big_button{
+        font-size: 1.3em;
+    }
+    .small_button{
+        font-size: 1em;
+    }
+
+
+    .g-recaptcha{
+        transform:scale(0.80);
+    }
+
+
+    .indeterminate-progress-block{
+        height: 25px;
+    }
+    .indeterminate-progress-box{
+        height: 25px;
+    }
+    .progress{
+        height: 25px;
+    }
+    .progress_1{
+        height: 25px;
+    }
+    .progress_2{
+        height: 25px;
+    }
+    .progress_3{
+        height: 25px;
     }
 }
+@media (max-width: 360px){
+    h1{
+        font-size: 1.3em;
+    }
+    h2{
+        font-size: 0.8em;
+    }
+    h5{
+        font-size: 1.2em;
+    }
+    p {
+        font-size: 0.8em;
+    }
 
+    .upload_page_back_button{
+        margin-top: -40px;
+    }
+    .upload_page_back_button::after{
+        content: "<";
+    }
+    .upload_page_dropdown_div{
+        margin-bottom: 50px;
+    }
+    .upload_page_jumbotron{
+        padding-bottom: 60px;
+    }
+
+    .big_button{
+        font-size: 1em;
+    }
+    .small_button{
+        font-size: 0.7em;
+    }
+
+
+    .g-recaptcha{
+        transform:scale(0.65);
+    }
+
+
+    .indeterminate-progress-block{
+        height: 20px;
+    }
+    .indeterminate-progress-box{
+        height: 20px;
+    }
+    .progress{
+        height: 20px;
+    }
+    .progress_1{
+        height: 20px;
+    }
+    .progress_2{
+        height: 20px;
+    }
+    .progress_3{
+        height: 20px;
+    }
+}
 /* -------------------------------- */

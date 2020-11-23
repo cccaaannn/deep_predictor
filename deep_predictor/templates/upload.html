@@ -9,12 +9,12 @@
 
 {% block body %}
 
-<div class="jumbotron jumbotron-fluid">
+<div class="jumbotron jumbotron-fluid upload_page_jumbotron">
 
     <!-- text comes from css -->
-    <a class="btn button_color back_button" href="/" role="button"></a>
+    <a class="btn small_button upload_page_back_button" href="/" role="button"></a>
 
-  <div class="center_div" id="center_div">
+    <div class="center_div" id="center_div">
         <div id="header_div">
             <h1>Test Your Image</h1>
         </div>
@@ -31,8 +31,8 @@
             <div class="g-recaptcha" id="recaptcha" data-sitekey={{ recaptcha_sitekey }}></div>
             <!-- <p><input type="hidden" name="api_key" id="api_key"></p> -->
 
-            <div class="dropdown" id="dropdown">  
-                <button class="btn button_color dropdown-toggle float-left" type="button" id="dropdownMenuButton" data-toggle="dropdown"> 
+            <div class="dropdown upload_page_dropdown_div" id="dropdown">  
+                <button class="btn small_button upload_page_dropdown_button dropdown-toggle float-left" type="button" id="dropdownMenuButton" data-toggle="dropdown"> 
                     <!-- {{ models['frontend_name'] }} -->
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -43,8 +43,7 @@
             </div>
             <input type="hidden" name="prediction_id" id="prediction_id">
             <input type="hidden" name="model_name" id="model_name">
-            </br> </br>
-            <input type="submit" name="submit_button" id="submit_button" value="Predict" class="btn button_color float-right btn-lg">
+            <input type="submit" name="submit_button" id="submit_button" value="Predict" class="btn big_button upload_page_predict_button float-right">
             </br>
 
         </form>
