@@ -50,7 +50,7 @@ class flask_app():
 
         # recaptcha_options 
         self.__recaptcha_sitekey = cfg["deep_predictor_options"]["production"]["recaptcha_options"]["recaptcha_sitekey"]
-        self.recaptcha_secret_key = cfg["deep_predictor_options"]["production"]["recaptcha_options"]["recaptcha_secret_key"]
+        self.__recaptcha_secret_key = cfg["deep_predictor_options"]["production"]["recaptcha_options"]["recaptcha_secret_key"]
 
         # upload options
         self.__supported_extensions = cfg["deep_predictor_options"]["production"]["upload_options"]["supported_extensions"]
@@ -188,7 +188,7 @@ class flask_app():
                         abort(400, description="Api key is incorrect")
                 elif(recaptcha_response):
                     # check recaptcha
-                    if(not self.__validate_recaptcha(recaptcha_response, self.recaptcha_secret_key)):
+                    if(not self.__validate_recaptcha(recaptcha_response, self.__recaptcha_secret_key)):
                         self.__logger.warning("recaptcha is not verified")
                         return render_template("upload.html", models=self.__predictors_info, recaptcha_sitekey=self.__recaptcha_sitekey), 400
                 else:
