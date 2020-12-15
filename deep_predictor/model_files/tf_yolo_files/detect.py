@@ -5,9 +5,12 @@ this is a modified version of the detect.py on this repo
 """
 
 import tensorflow as tf
-physical_devices = tf.config.experimental.list_physical_devices('GPU')
-if len(physical_devices) > 0:
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
+# USE ONLY CPU
+# physical_devices = tf.config.experimental.list_physical_devices('GPU')
+# if len(physical_devices) > 0:
+#     tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
 
 from tensorflow.python.saved_model import tag_constants
 import numpy as np
