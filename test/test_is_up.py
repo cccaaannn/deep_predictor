@@ -47,7 +47,7 @@ def send_mail(sender_mail, sender_password, receiver_mail, mail_subject, mail_bo
 
     logger.info("The mail has been sent")
 
-def test_prediction(prediction_gen, mail_info, result_wait_time=7):
+def test_prediction(prediction_gen, mail_info, api_url="http://127.0.0.1:5000/test-api?prediction_id=", result_wait_time=7):
     """tests prediction by generating posting prediction, waiting and geting prediction result
         if result is an error send mail
     """
@@ -57,7 +57,7 @@ def test_prediction(prediction_gen, mail_info, result_wait_time=7):
 
         # wait and get the prediction result
         time.sleep(result_wait_time)
-        prediction = json.loads(requests.get("http://127.0.0.1:5000/test-api?prediction_id={0}".format(prediction_id)).text)
+        prediction = json.loads(requests.get("{0}{1}".format(api_url, prediction_id)).text)
         prediction_status = prediction["prediction_status"]
         logger.info(prediction_status)
 
@@ -85,6 +85,7 @@ id_prefix = "TEST"
 id_size = 28 # after adding the prefix size becomes 32
 test_image_folder = "test_images/food"
 api_key = "4c98a83efe384b53b1db01516907cabb"
+api_url = "http://127.0.0.1:5000/test-api?prediction_id="
 
 prediction_gen = prediction_generator(id_prefix, id_size, test_image_folder, api_key)
 
@@ -94,8 +95,8 @@ from mail_info import sender_mail, sender_password, receiver_mail
 mail_info = {"sender_mail":sender_mail, "sender_password":sender_password, "receiver_mail":receiver_mail}
 
 
-schedule.every(1).minutes.do(test_prediction, prediction_gen, mail_info)
-# schedule.every(1).hour.do(test_prediction, prediction_gen, sender_mail, sender_password, receiver_mail)
+schedule.every(1).minutes.do(test_prediction, prediction_gen, mail_info, api_url=api_url)
+# schedule.every(1).hour.do(test_prediction, prediction_gen, mail_info, api_url=api_url)
 
 while True:
     schedule.run_pending()
