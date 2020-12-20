@@ -22,11 +22,24 @@ h2 {
     color: white;
 }
 
-a {
-    color: Black;
+h4 {
+    color: white;
+}
+
+a{
+    color: #ff3355;
+    font-weight: bold;
+}
+
+a:hover{
+    color: white;
 }
 
 p {
+    color: white;
+}
+
+ul {
     color: white;
 }
 /* -------------------------------- */
