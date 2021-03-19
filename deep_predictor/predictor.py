@@ -3,10 +3,10 @@ import cv2
 import numpy as np
 
 # predictors
-from predictor_keras import predictor_keras
-from predictor_tf_yolo import predictor_tf_yolo
+# from predictor_keras import predictor_keras
+# from predictor_tf_yolo import predictor_tf_yolo
 # from predictor_darknet import predictor_darknet
-from predictor_dummy import predictor_dummy
+# from predictor_dummy import predictor_dummy
 
 # my classes
 from helpers.file_folder_operations import file_folder_operations
@@ -41,12 +41,16 @@ class predictor():
     def __init_backend(self):
         """inits predictor backend"""
         if(self.predictor_backend == "keras"):
+            from predictor_keras import predictor_keras
             self.predictor = predictor_keras(self.cfg_path)
         elif(self.predictor_backend == "tf_yolo"):
+            from predictor_tf_yolo import predictor_tf_yolo
             self.predictor = predictor_tf_yolo(self.cfg_path)
         elif(self.predictor_backend == "darknet"):
+            from predictor_darknet import predictor_darknet
             self.predictor = predictor_darknet(self.cfg_path)
         elif(self.predictor_backend == "dummy"):
+            from predictor_dummy import predictor_dummy
             self.predictor = predictor_dummy(self.cfg_path)            
         else:
             self.logger.error("cfg file error, predictor backend is not supported")
