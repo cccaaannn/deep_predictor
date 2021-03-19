@@ -113,7 +113,7 @@ class flask_app():
             })
 
             self.__model_names.append(predictor["model_name"])
-            self.__predictors_info.append({'frontend_name': predictor["frontend_name"], 'model_name': predictor["model_name"]})
+            self.__predictors_info.append({'frontend_name': predictor["frontend_name"], 'model_name': predictor["model_name"], 'model_description': predictor["model_description"]})
 
         self.__TEST_model_names = []
         self.__TEST_predictors_info = []
