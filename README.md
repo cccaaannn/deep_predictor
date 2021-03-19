@@ -77,16 +77,19 @@
             {
                 "frontend_name":"food 10",
                 "model_name":"food-10",
+                "model_description":"this model finds food",
                 "cfg_path":"deep_predictor/cfg/predictors/keras/vgg16_food10.cfg"
             },
             {
                 "frontend_name":"food 300",
                 "model_name":"food-300",
+                "model_description":"this model finds food",
                 "cfg_path":"deep_predictor/cfg/predictors/tf_yolo/food300.cfg"
             },
             {
                 "frontend_name":"common objects",
                 "model_name":"common-objects",
+                "model_description":"this model find common objects",
                 "cfg_path":"deep_predictor/cfg/predictors/tf_yolo/ms_coco.cfg"
             }
         ]
@@ -180,7 +183,7 @@ To make a custom frontend
   },
   "prediction_id": "XC9ZNaDT2nfFaORUIeXSBims3WcdLJRS",
   "prediction_status": 200,
-  "prediction_time": 1604856542,
+  "prediction_time": 0.165,
   "predictions": [
     {
       "class_index": 6,
@@ -211,7 +214,7 @@ To make a custom frontend
   },
   "prediction_id": "zRnzAQCgs5rvkRnILtfz4nSYa1D56jCA",
   "prediction_status": 200,
-  "prediction_time": 1604856413,
+  "prediction_time": 0.165,
   "predictions": [
     {
       "bbox": { "cx": 0.28939, "cy": 0.66856, "h": 0.53053, "w": 0.23469 },
@@ -236,7 +239,7 @@ To make a custom frontend
   },
   "prediction_id": "tr0S8H0RYwRsAYeCGlDsH4JQOHZ1Q0tH",
   "prediction_status": 510,
-  "prediction_time": 1604857137,
+  "prediction_time": 0.165,
   "predictions": ""
 }
 ```
@@ -249,15 +252,18 @@ To make a custom frontend
   "predictors":[
       { 
         "frontend_name": "Detect food", 
-        "model_name": "food-300-tf_yolo" 
+        "model_name": "food-300-tf_yolo",
+        "model_description":"this model finds food"
       },
       { 
         "frontend_name": "Classify food", 
-        "model_name": "food-300-densenet" 
+        "model_name": "food-300-densenet",
+        "model_description":"this model finds food"
       },
       { 
         "frontend_name": "Detect common objects", 
-        "model_name": "common-objects" 
+        "model_name": "common-objects",
+        "model_description":"this model finds common objects"
       }
     ]
 }
