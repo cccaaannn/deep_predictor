@@ -2,7 +2,7 @@
 tensorflow==2.5.1
 keras==2.4.3
 Flask==1.1.2
-waitress==1.4.4
+waitress==2.1.1
 opencv-python==4.4.0.44
 Pillow==9.0.0
 numpy==1.19.2
