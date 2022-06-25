@@ -5,4 +5,4 @@ Flask==1.1.2
 waitress==1.4.4
 opencv-python==4.4.0.44
 Pillow==9.0.1
-numpy==1.19.2
+numpy==1.22.0
